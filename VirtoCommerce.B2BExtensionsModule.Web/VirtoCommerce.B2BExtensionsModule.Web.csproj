@@ -7,12 +7,12 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CBCFB345-70D4-480B-9AB3-98D45B55564C}</ProjectGuid>
+    <ProjectGuid>{EF6A4C3B-9D9F-4886-B2E8-1037368F7D3F}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VirtoCommerce.B2BExtentionsModule.Web</RootNamespace>
-    <AssemblyName>VirtoCommerce.B2BExtentionsModule.Web</AssemblyName>
+    <RootNamespace>VirtoCommerce.B2BExtensionsModule.Web</RootNamespace>
+    <AssemblyName>VirtoCommerce.B2BExtensionsModule.Web</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -98,8 +98,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\logo.png" />
-    <Content Include="packages.config" />
-    <Content Include="module.manifest" />
+    <Content Include="module.manifest">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -117,8 +121,11 @@
   <ItemGroup>
     <Folder Include="Content\css\" />
     <Folder Include="Controllers\Api\" />
+    <Folder Include="Model\" />
+    <Folder Include="Repositories\" />
     <Folder Include="Scripts\blades\" />
     <Folder Include="Scripts\resources\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -133,9 +140,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53844</DevelopmentServerPort>
+          <DevelopmentServerPort>27066</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:52389/</IISUrl>
+          <IISUrl>http://localhost:27066/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

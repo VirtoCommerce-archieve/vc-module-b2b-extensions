@@ -1,9 +1,7 @@
-﻿using System;
-using System.Web.Http;
-using Microsoft.Practices.Unity;
+﻿using Microsoft.Practices.Unity;
 using VirtoCommerce.Platform.Core.Modularity;
 
-namespace VirtoCommerce.B2BExtentionsModule.Web
+namespace VirtoCommerce.B2BExtensionsModule.Web
 {
     public class Module : ModuleBase
     {

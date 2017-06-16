@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VirtoCommerce.B2BExtentionsModule.Web")]
+[assembly: AssemblyTitle("VirtoCommerce.B2BExtensionsModule.Web")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VirtoCommerce.B2BExtentionsModule.Web")]
+[assembly: AssemblyProduct("VirtoCommerce.B2BExtensionsModule.Web")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("cbcfb345-70d4-480b-9ab3-98d45b55564c")]
+[assembly: Guid("ef6a4c3b-9d9f-4886-b2e8-1037368f7d3f")]
 
 // Version information for an assembly consists of the following four values:
 //

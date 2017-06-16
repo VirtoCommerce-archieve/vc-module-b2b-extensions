@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <module>
-  <id>VirtoCommerce.B2BExtention</id>
+  <id>VirtoCommerce.B2BExtension</id>
   <version>1.0.1</version>
   <platformVersion>2.12.0</platformVersion>
   <dependencies>
@@ -8,7 +8,7 @@
     <dependency id="VirtoCommerce.Customer" version="2.13.0" />
   </dependencies>
 
-  <title>B2B extentions module</title>
+  <title>B2B extensions module</title>
   <description>Managing B2B functionality for corporate customers</description>
   <authors>
     <author>Eugeney Tarincev</author>
@@ -18,13 +18,13 @@
     <owner>Virto Commerce</owner>
   </owners>
   <projectUrl>https://github.com/VirtoCommerce/vc-module-b2b-extensions</projectUrl>
-  <iconUrl>https://raw.githubusercontent.com/VirtoCommerce/vc-module-b2b-extensions/master/VirtoCommerce.B2BExtentionsModule.Web/Content/logo.png</iconUrl>
+  <iconUrl>https://raw.githubusercontent.com/VirtoCommerce/vc-module-b2b-extensions/master/VirtoCommerce.B2BExtensionsModule.Web/Content/logo.png</iconUrl>
   <releaseNotes>First version.</releaseNotes>
   <copyright>Copyright © 2011-2017 Virto Commerce. All rights reserved</copyright>
   <tags>B2B</tags>
 
-  <assemblyFile>VirtoCommerce.B2BExtentionsModule.Web.dll</assemblyFile>
-  <moduleType>VirtoCommerce.B2BExtentionsModule.Web.Module, VirtoCommerce.B2BExtentionsModule.Web</moduleType>
+  <assemblyFile>VirtoCommerce.B2BExtensionsModule.Web.dll</assemblyFile>
+  <moduleType>VirtoCommerce.B2BExtensionsModule.Web.Module, VirtoCommerce.B2BExtensionsModule.Web</moduleType>
 
   <styles>
     <directory virtualPath="$/Content/css" searchPattern="*.css" searchSubdirectories="true" />
