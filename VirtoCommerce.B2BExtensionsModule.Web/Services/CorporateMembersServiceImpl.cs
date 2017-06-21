@@ -142,6 +142,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Services
         {
             using (var repository = _cortorateRepositoryFactory()) {
                 repository.RemoveMembersByIds(ids);
+                CommitChanges(repository);
             }
         }
     }
