@@ -73,29 +73,14 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        //// DELETE: api/b2b/companyMember
-        //[HttpDelete]
-        //[Route("companyMember")]
-        //[ResponseType(typeof(void))]
-        //public IHttpActionResult UpdateMember(CompanyMember companyMember)
-        //{
-        //    _corporateMembersService.SaveChanges(new[] { companyMember });
-        //    return StatusCode(HttpStatusCode.NoContent);
-        //}
-
-        ///// <summary>
-        ///// Delete members
-        ///// </summary>
-        ///// <remarks>Delete members by given array of ids.</remarks>
-        ///// <param name="ids">An array of members ids</param>
-        //[HttpDelete]
-        //[Route("members")]
-        //[ResponseType(typeof(void))]
-        //[CheckPermission(Permission = CustomerPredefinedPermissions.Delete)]
-        //public IHttpActionResult DeleteMembers([FromUri] string[] ids)
-        //{
-        //    _memberService.Delete(ids);
-        //    return StatusCode(HttpStatusCode.NoContent);
-        //}
+        // DELETE: api/b2b/companyMembers
+        [HttpDelete]
+        [Route("companyMembers")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult DeleteMembers([FromUri] string[] ids)
+        {
+            _corporateMembersService.RemoveCorporateMembersByIds(ids);
+            return StatusCode(HttpStatusCode.NoContent);
+        }
     }
 }
