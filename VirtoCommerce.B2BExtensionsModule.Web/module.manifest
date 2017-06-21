@@ -37,5 +37,13 @@
   </settings>
 
   <permissions>
+      <group name="Business-to-Business">
+          <permission id="storefront:companyInfo:access" name="Open company info" description=""/>
+          <permission id="storefront:companyInfo:update" name="Update company info" description=""/>
+          <permission id="storefront:companyMembers:access" name="Open company members" description=""/>
+          <permission id="storefront:companyMembers:update" name="Update company members" description=""/>
+          <permission id="storefront:companyMembers:security:access" name="Open security info about company members" description=""/>
+          <permission id="storefront:companyMembers:security:update" name="Update security info about company members" description=""/>
+      </group>
   </permissions>
 </module>
