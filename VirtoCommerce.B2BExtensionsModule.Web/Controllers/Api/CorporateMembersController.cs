@@ -1,21 +1,24 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
-using VirtoCommerce.B2BExtensionsModule.Web.Services;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Customer.Model;
+using VirtoCommerce.Domain.Customer.Services;
 
 namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
 {
     [RoutePrefix("api/b2b")]
     public class CorporateMembersController : ApiController
     {
-        private readonly ICorporateMembersService _corporateMembersService;
+        private readonly IMemberService _memberService;
+        private readonly IMemberSearchService _memberSearchService;
 
-        public CorporateMembersController(ICorporateMembersService corporateMembersService)
+        public CorporateMembersController(IMemberService memberService, IMemberSearchService memberSearchService)
         {
-            _corporateMembersService = corporateMembersService;
+            _memberService = memberService;
+            _memberSearchService = memberSearchService;
         }
 
         // GET: api/b2b/company/{id}
@@ -24,8 +27,12 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(Company))]
         public IHttpActionResult GetCompanyById(string id)
         {
-            var retVal = _corporateMembersService.GetCompanyById(id);
-            return Ok(retVal);
+            var retVal = _memberService.GetByIds(new[] { id }).FirstOrDefault();
+            if (retVal != null)
+            {
+                return Ok((dynamic)retVal);
+            }
+            return Ok();
         }
 
         // POST: api/b2b/company
@@ -34,7 +41,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult UpdateCompany(Company company)
         {
-            _corporateMembersService.SaveChanges(new[] { company });
+            _memberService.SaveChanges(new[] { company });
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -49,7 +56,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 criteria = new MembersSearchCriteria();
             }
 
-            var result = _corporateMembersService.GetCompanyMembers(criteria);
+            var result = _memberSearchService.SearchMembers(criteria);
             return Ok(result);
         }
 
@@ -59,8 +66,12 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(CompanyMember))]
         public IHttpActionResult GetCompanyMemberById(string id)
         {
-            var retVal = _corporateMembersService.GetCompanyMemberById(id);
-            return Ok(retVal);
+            var retVal = _memberService.GetByIds(new[] { id }).FirstOrDefault();
+            if (retVal != null)
+            {
+                return Ok((dynamic)retVal);
+            }
+            return Ok();
         }
 
         // POST: api/b2b/companyMember
@@ -69,7 +80,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult UpdateMember(CompanyMember companyMember)
         {
-            _corporateMembersService.SaveChanges(new[] { companyMember });
+            _memberService.SaveChanges(new[] { companyMember });
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -79,7 +90,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult DeleteMembers([FromUri] string[] ids)
         {
-            _corporateMembersService.RemoveCorporateMembersByIds(ids);
+            _memberService.Delete(ids);
             return StatusCode(HttpStatusCode.NoContent);
         }
     }

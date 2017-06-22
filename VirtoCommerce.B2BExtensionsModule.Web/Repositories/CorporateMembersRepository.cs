@@ -6,7 +6,7 @@ using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 
 namespace VirtoCommerce.B2BExtensionsModule.Web.Repositories
 {
-    public class CorporateMembersRepository : CustomerRepositoryImpl, ICorporateMembersRepository
+    public class CorporateMembersRepository : CustomerRepositoryImpl
     {
         public CorporateMembersRepository()
         {
@@ -30,24 +30,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Repositories
             modelBuilder.Entity<DepartmentDataEntity>().ToTable("Department");
 
             base.OnModelCreating(modelBuilder);
-        }
-
-        public virtual CompanyDataEntity GetCompanyById(string id)
-        {
-            var member = base.GetMembersByIds(new[] { id }).FirstOrDefault();
-
-            CompanyDataEntity companyData = member as CompanyDataEntity;
-
-            return companyData;
-        }
-
-        public virtual CompanyMemberDataEntity GetCompanyMemberById(string id)
-        {
-            var member = base.GetMembersByIds(new[] { id }).FirstOrDefault();
-
-            CompanyMemberDataEntity companyMemberData = member as CompanyMemberDataEntity;
-
-            return companyMemberData;
         }
 
         public IQueryable<CompanyDataEntity> Companies
