@@ -33,7 +33,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             IMemberService memberService,
             IMemberSearchService memberSearchService,
             IRoleManagementService roleService,
-            ISecurityService securityService,)
+            ISecurityService securityService)
         {
             _notificationManager = notificationManager;
             _storeService = storeService;
