@@ -15,5 +15,12 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Security
         public string Password { get; set; }
 
         public string StoreId { get; set; }
+
+        public bool IsValid()
+        {
+            return !string.IsNullOrWhiteSpace(CompanyName) && !string.IsNullOrWhiteSpace(FirstName) &&
+                !string.IsNullOrWhiteSpace(LastName) && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(UserName) &&
+                !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(StoreId);
+        }
     }
 }

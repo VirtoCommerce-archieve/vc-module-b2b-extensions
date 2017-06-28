@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
 using VirtoCommerce.B2BExtensionsModule.Web.Repositories;
 using VirtoCommerce.B2BExtensionsModule.Web.Services;
 using VirtoCommerce.CustomerModule.Data.Model;
+using VirtoCommerce.CustomerModule.Data.Repositories;
 using VirtoCommerce.Domain.Customer.Model;
+using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
-using VirtoCommerce.CustomerModule.Data.Repositories;
-using VirtoCommerce.Domain.Customer.Services;
 
 namespace VirtoCommerce.B2BExtensionsModule.Web
 {
@@ -58,8 +60,31 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
             AbstractTypeFactory<MemberDataEntity>.RegisterType<DepartmentDataEntity>();
 
             base.PostInitialize();
+
+            InitializeSecurity();
         }
 
         #endregion
+
+        private void InitializeSecurity()
+        {
+            var roleManagementService = _container.Resolve<IRoleManagementService>();
+            var securityService = _container.Resolve<ISecurityService>();
+            var role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.FirstOrDefault();
+
+            if (role == null)
+            {
+                role = new Role
+                {
+                    Name = Constants.ModuleAdminRole,
+                    Description = Constants.ModuleAdminRoleDescription
+                };
+            }
+
+            var allPermissions = securityService.GetAllPermissions();
+            role.Permissions = allPermissions.Where(p => p.ModuleId == ModuleInfo.Id).ToArray();
+
+            roleManagementService.AddOrUpdateRole(role);
+        }
     }
 }

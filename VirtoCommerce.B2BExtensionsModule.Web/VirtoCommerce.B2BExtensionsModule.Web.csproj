@@ -153,6 +153,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="Controllers\Api\CorporateMembersController.cs" />
     <Compile Include="Controllers\Api\CorporateRegisterController.cs" />
     <Compile Include="Migrations\201706160905380_Initial.cs" />

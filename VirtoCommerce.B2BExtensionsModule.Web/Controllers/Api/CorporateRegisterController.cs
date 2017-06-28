@@ -5,6 +5,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Security;
+using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Platform.Core.Security;
 
@@ -16,12 +17,14 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         private readonly ISecurityService _securityService;
         private readonly IMemberService _memberService;
         private readonly IMemberSearchService _memberSearchService;
+        private readonly IRoleManagementService _roleService;
 
-        public CorporateRegisterController(ISecurityService securityService, IMemberService memberService, IMemberSearchService memberSearchService)
+        public CorporateRegisterController(ISecurityService securityService, IMemberService memberService, IMemberSearchService memberSearchService, IRoleManagementService roleService)
         {
             _securityService = securityService;
             _memberService = memberService;
             _memberSearchService = memberSearchService;
+            _roleService = roleService;
         }
 
         // POST: api/b2b/register
@@ -31,15 +34,33 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> Register(Register registerData)
         {
-            await Task.Delay(5000);
-            return Ok();
+            if (!registerData.IsValid())
+            {
+                return BadRequest();
+            }
+
+            //Check same company exist
+            var searchRequest = new MembersSearchCriteria {
+                Keyword = registerData.CompanyName,
+                MemberType = typeof(Company).Name
+            };
+            var companySearchResult = _memberSearchService.SearchMembers(searchRequest);
+
+            if (companySearchResult.TotalCount > 0)
+            {
+                return Ok(new { Message = "Company with same name already exist" });
+            }
+
+            var corporateAdminRole = _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.First();
             var user = new ApplicationUserExtended
             {
                 Email = registerData.Email,
                 Password = registerData.Password,
                 UserName = registerData.UserName,
-                UserType = "Administrator",
+                UserType = AccountType.Administrator.ToString(),
+                UserState = AccountState.Approved,
                 StoreId = registerData.StoreId,
+                Roles = new[] { corporateAdminRole }
             };
 
             //Register user in VC Platform (create security account)
@@ -50,36 +71,30 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 //Load newly created account from API
                 var storefrontUser = await _securityService.FindByNameAsync(user.UserName, UserDetails.Reduced);
 
+                //Create new company
                 var company = new Company
                 {
                     Name = registerData.CompanyName
                 };
                 _memberService.SaveChanges(new[] { company });
-                //var retVal = _memberService.GetByIds(new[] { company.Id }).FirstOrDefault();
 
+                string fullName = string.Format("{0} {1}", registerData.FirstName, registerData.LastName);
                 var member = new CompanyMember
                 {
                     Id = storefrontUser.Id,
-
-                    //UserId = storefrontUser.Id,
-                    //UserName = storefrontUser.UserName,
-                    //IsRegisteredUser = true,
-
-                    Name = registerData.FirstName + registerData.LastName,
-                    FullName = registerData.FirstName + registerData.LastName,
+                    Name = fullName,
+                    FullName = fullName,
                     FirstName = registerData.FirstName,
                     LastName = registerData.LastName,
-                    IsActive = true
+                    Emails = new[] { registerData.Email },
+                    IsActive = true,
+                    Organizations = new List<string>() { company.Id }
                 };
-
-                member.Organizations = new List<string>();
-                member.Organizations.Add(company.Id);
-
                 _memberService.SaveChanges(new[] { member });
             }
             else
             {
-                ModelState.AddModelError("form", result.Errors.First());
+                return BadRequest(result.Errors.First());
             }
 
             return Ok();
