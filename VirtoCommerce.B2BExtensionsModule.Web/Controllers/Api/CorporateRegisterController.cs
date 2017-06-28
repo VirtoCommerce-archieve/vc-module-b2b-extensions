@@ -98,7 +98,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpPost]
         [Route("invite")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult Invite(Invite invite)
+        public async Task<IHttpActionResult> Invite(Invite invite)
         {
             if (invite == null || string.IsNullOrEmpty(invite.StoreId) || string.IsNullOrEmpty(invite.CompanyId) || invite.Emails.IsNullOrEmpty() ||
                 string.IsNullOrEmpty(invite.AdminName) || string.IsNullOrEmpty(invite.AdminEmail) || string.IsNullOrEmpty(invite.CallbackUrl))
@@ -119,7 +119,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 {
                     FullName = email,
                     Emails = new[] { email },
-                    Organizations = new[] { invite.CompanyId }
+                    Organizations = new[] { invite.CompanyId },
+                    IsActive = false
                 }).ToArray();
                 _memberService.SaveChanges(companyMembers.ToArray());
 
