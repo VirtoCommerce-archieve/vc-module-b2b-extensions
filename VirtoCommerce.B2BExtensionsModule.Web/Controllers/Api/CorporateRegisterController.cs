@@ -63,6 +63,65 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             return await CreateAsync(registerData, member);
         }
 
+        [HttpPost]
+        [Route("invite")]
+        [ResponseType(typeof(void))]
+        public async Task<IHttpActionResult> Invite(Invite invite)
+        {
+            if (invite == null || string.IsNullOrEmpty(invite.StoreId) || string.IsNullOrEmpty(invite.CompanyId) || invite.Emails.IsNullOrEmpty() ||
+                string.IsNullOrEmpty(invite.AdminName) || string.IsNullOrEmpty(invite.AdminEmail) || string.IsNullOrEmpty(invite.CallbackUrl))
+            {
+                return BadRequest();
+            }
+
+            var store = _storeService.GetById(invite.StoreId);
+            var company = _memberService.GetByIds(new[] { invite.CompanyId }).FirstOrDefault();
+            if (store == null || company == null)
+            {
+                return BadRequest();
+            }
+
+            invite.Emails.ProcessWithPaging(50, (currentEmails, currentCount, totalCount) =>
+            {
+                var companyMembers = currentEmails.Select(email => new CompanyMember
+                {
+                    FullName = email,
+                    Emails = new[] { email },
+                    Organizations = new[] { invite.CompanyId },
+                    IsActive = false
+                }).ToArray();
+                _memberService.SaveChanges(companyMembers.ToArray());
+
+                foreach (var companyMember in companyMembers)
+                {
+                    var token = companyMember.Id;
+
+                    var uriBuilder = new UriBuilder(invite.CallbackUrl);
+                    var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+                    query["code"] = token;
+                    uriBuilder.Query = query.ToString();
+
+                    var notification = _notificationManager.GetNewNotification<CorporateInviteEmailNotification>(invite.StoreId, "Store", invite.Language);
+                    notification.Url = uriBuilder.ToString();
+                    notification.CompanyName = company.Name;
+                    notification.Message = invite.Message;
+
+                    notification.StoreName = store.Name;
+                    notification.Sender = store.Email;
+                    notification.IsActive = true;
+
+                    notification.AdminName = invite.AdminName;
+                    notification.AdminEmail = invite.AdminEmail;
+
+                    notification.Recipient = companyMember.Emails.First();
+
+                    _notificationManager.ScheduleSendNotification(notification);
+                }
+            });
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
         private async Task<IHttpActionResult> CreateAsync(Register registerData, CompanyMember member)
         {
             if (!registerData.IsValid())
@@ -125,7 +184,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 }
                 else
                 {
-                    member.Name = $"{registerData.FirstName} {registerData.LastName}",
+                    member.Name = $"{registerData.FirstName} {registerData.LastName}";
                     member.FullName = $"{registerData.FirstName} {registerData.LastName}";
                     member.FirstName = registerData.FirstName;
                     member.LastName = registerData.LastName;
@@ -140,65 +199,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             }
 
             return Ok();
-        }
-
-        [HttpPost]
-        [Route("invite")]
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Invite(Invite invite)
-        {
-            if (invite == null || string.IsNullOrEmpty(invite.StoreId) || string.IsNullOrEmpty(invite.CompanyId) || invite.Emails.IsNullOrEmpty() ||
-                string.IsNullOrEmpty(invite.AdminName) || string.IsNullOrEmpty(invite.AdminEmail) || string.IsNullOrEmpty(invite.CallbackUrl))
-            {
-                return BadRequest();
-            }
-
-            var store = _storeService.GetById(invite.StoreId);
-            var company = _memberService.GetByIds(new[] { invite.CompanyId }).FirstOrDefault();
-            if (store == null || company == null)
-            {
-                return BadRequest();
-            }
-
-            invite.Emails.ProcessWithPaging(50, (currentEmails, currentCount, totalCount) =>
-            {
-                var companyMembers = currentEmails.Select(email => new CompanyMember
-                {
-                    FullName = email,
-                    Emails = new[] { email },
-                    Organizations = new[] { invite.CompanyId },
-                    IsActive = false
-                }).ToArray();
-                _memberService.SaveChanges(companyMembers.ToArray());
-
-                foreach (var companyMember in companyMembers)
-                {
-                    var token = companyMember.Id;
-
-                    var uriBuilder = new UriBuilder(invite.CallbackUrl);
-                    var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-                    query["code"] = token;
-                    uriBuilder.Query = query.ToString();
-
-                    var notification = _notificationManager.GetNewNotification<CorporateInviteEmailNotification>(invite.StoreId, "Store", invite.Language);
-                    notification.Url = uriBuilder.ToString();
-                    notification.CompanyName = company.Name;
-                    notification.Message = invite.Message;
-
-                    notification.StoreName = store.Name;
-                    notification.Sender = store.Email;
-                    notification.IsActive = true;
-
-                    notification.AdminName = invite.AdminName;
-                    notification.AdminEmail = invite.AdminEmail;
-
-                    notification.Recipient = companyMember.Emails.First();
-
-                    _notificationManager.ScheduleSendNotification(notification);
-                }
-            });
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
     }
 }
