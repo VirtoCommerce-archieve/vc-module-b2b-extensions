@@ -41,49 +41,67 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> Register(Register registerData)
         {
-            await Task.Delay(5000);
+            await CreateAsync(registerData, null);
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("register/{invite}")]
+        [AllowAnonymous]
+        [ResponseType(typeof(void))]
+        public async Task<IHttpActionResult> RegisterByInvite([FromBody] Register registerData, string invite)
+        {
+            var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().First();
+            await CreateAsync(registerData, member);
+            return Ok();
+        }
+
+        private async Task CreateAsync(Register registerData, CompanyMember member)
+        {
             var user = new ApplicationUserExtended
             {
-                Email = registerData.Email,
+                Email = member?.Emails.FirstOrDefault() ?? registerData.Email,
                 Password = registerData.Password,
                 UserName = registerData.UserName,
-                UserType = "Administrator",
+                UserType = "Customer",
                 StoreId = registerData.StoreId,
             };
 
             //Register user in VC Platform (create security account)
             var result = await _securityService.CreateAsync(user);
 
-            if (result.Succeeded == true)
+            if (result.Succeeded)
             {
                 //Load newly created account from API
                 var storefrontUser = await _securityService.FindByNameAsync(user.UserName, UserDetails.Reduced);
-
-                var company = new Company
+                
+                if (member == null)
                 {
-                    Name = registerData.CompanyName
-                };
-                _memberService.SaveChanges(new[] { company });
-                //var retVal = _memberService.GetByIds(new[] { company.Id }).FirstOrDefault();
+                    var company = new Company
+                    {
+                        Name = registerData.CompanyName
+                    };
+                    _memberService.SaveChanges(new[] { company });
 
-                var member = new CompanyMember
+                    member = new CompanyMember
+                    {
+                        Id = storefrontUser.Id,
+                        Name = $"{registerData.FirstName} {registerData.LastName}",
+                        FullName = $"{registerData.FirstName} {registerData.LastName}",
+                        FirstName = registerData.FirstName,
+                        LastName = registerData.LastName,
+                        IsActive = true,
+                        Organizations = new List<string> { company.Id }
+                    };
+                }
+                else
                 {
-                    Id = storefrontUser.Id,
-
-                    //UserId = storefrontUser.Id,
-                    //UserName = storefrontUser.UserName,
-                    //IsRegisteredUser = true,
-
-                    Name = registerData.FirstName + registerData.LastName,
-                    FullName = registerData.FirstName + registerData.LastName,
-                    FirstName = registerData.FirstName,
-                    LastName = registerData.LastName,
-                    IsActive = true
-                };
-
-                member.Organizations = new List<string>();
-                member.Organizations.Add(company.Id);
+                    member.Name = $"{registerData.FirstName} {registerData.LastName}",
+                    member.FullName = $"{registerData.FirstName} {registerData.LastName}";
+                    member.FirstName = registerData.FirstName;
+                    member.LastName = registerData.LastName;
+                    member.IsActive = true;
+                }
 
                 _memberService.SaveChanges(new[] { member });
             }
@@ -91,8 +109,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             {
                 ModelState.AddModelError("form", result.Errors.First());
             }
-
-            return Ok();
         }
 
         [HttpPost]
