@@ -2,7 +2,9 @@
 using System.Linq;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
+using VirtoCommerce.B2BExtensionsModule.Web.Model.Notifications;
 using VirtoCommerce.B2BExtensionsModule.Web.Repositories;
+using VirtoCommerce.B2BExtensionsModule.Web.Resources;
 using VirtoCommerce.B2BExtensionsModule.Web.Services;
 using VirtoCommerce.CustomerModule.Data.Model;
 using VirtoCommerce.CustomerModule.Data.Repositories;
@@ -10,6 +12,7 @@ using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.Platform.Core.Notifications;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
@@ -60,6 +63,19 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
             AbstractTypeFactory<MemberDataEntity>.RegisterType<DepartmentDataEntity>();
 
             base.PostInitialize();
+
+            var notificationManager = _container.Resolve<INotificationManager>();
+            notificationManager.RegisterNotificationType(() => new CorporateInviteEmailNotification(_container.Resolve<IEmailNotificationSendingGateway>())
+            {
+                DisplayName = "Company member invite notification",
+                Description = "This notification sends to specified email when this email invited to register as company member.",
+                NotificationTemplate = new NotificationTemplate
+                {
+                    Subject = B2BExtensionsResources.InviteEmailNotificationSubject,
+                    Body = B2BExtensionsResources.InviteEmailNotificationBody,
+                    Language = "en-US"
+                }
+            });
 
             InitializeSecurity();
         }

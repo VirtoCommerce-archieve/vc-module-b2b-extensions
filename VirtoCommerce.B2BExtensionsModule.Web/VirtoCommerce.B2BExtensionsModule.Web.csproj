@@ -167,10 +167,13 @@
     <Compile Include="Model\CompanyMemberDataEntity.cs" />
     <Compile Include="Model\Department.cs" />
     <Compile Include="Model\DepartmentDataEntity.cs" />
+    <Compile Include="Model\Notifications\CorporateInviteEmailNotification.cs" />
+    <Compile Include="Model\Security\Invite.cs" />
     <Compile Include="Model\Security\Register.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CorporateMembersRepository.cs" />
+    <Compile Include="Resources\B2BExtensionsResources.Designer.cs" />
     <Compile Include="Services\CorporateMembersServiceImpl.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +185,7 @@
     <EmbeddedResource Include="Migrations\201706160905380_Initial.resx">
       <DependentUpon>201706160905380_Initial.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\B2BExtensionsResources.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
