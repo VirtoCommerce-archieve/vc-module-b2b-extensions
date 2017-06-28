@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Results;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Notifications;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Security;
@@ -129,39 +130,39 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 return BadRequest();
             }
 
-            //Check same company exist
-            var searchRequest = new MembersSearchCriteria
-            {
-                Keyword = registerData.CompanyName,
-                MemberType = typeof(Company).Name
-            };
-            var companySearchResult = _memberSearchService.SearchMembers(searchRequest);
-
-            if (companySearchResult.TotalCount > 0)
-            {
-                return Ok(new { Message = "Company with same name already exist" });
-            }
-
-            var corporateAdminRole = _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.First();
             var user = new ApplicationUserExtended
             {
                 Email = member?.Emails.FirstOrDefault() ?? registerData.Email,
                 Password = registerData.Password,
                 UserName = registerData.UserName,
-                UserType = AccountType.Administrator.ToString(),
+                UserType = AccountType.Customer.ToString(),
                 UserState = AccountState.Approved,
-                StoreId = registerData.StoreId,
-                Roles = new[] { corporateAdminRole }
+                StoreId = registerData.StoreId
             };
+
+            if (member == null)
+            {
+                //Check same company exist
+                var searchRequest = new MembersSearchCriteria
+                {
+                    Keyword = registerData.CompanyName,
+                    MemberType = typeof(Company).Name
+                };
+                var companySearchResult = _memberSearchService.SearchMembers(searchRequest);
+                if (companySearchResult.TotalCount > 0)
+                {
+                    return BadRequest("Company with same name already exist");
+                }
+
+                var corporateAdminRole = _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.First();
+                user.Roles = new[] { corporateAdminRole };
+            }
 
             //Register user in VC Platform (create security account)
             var result = await _securityService.CreateAsync(user);
 
             if (result.Succeeded)
             {
-                //Load newly created account from API
-                var storefrontUser = await _securityService.FindByNameAsync(user.UserName, UserDetails.Reduced);
-
                 if (member == null)
                 {
                     var company = new Company
@@ -172,7 +173,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
 
                     member = new CompanyMember
                     {
-                        Id = storefrontUser.Id,
+                        Id = user.Id,
                         Name = $"{registerData.FirstName} {registerData.LastName}",
                         FullName = $"{registerData.FirstName} {registerData.LastName}",
                         FirstName = registerData.FirstName,
