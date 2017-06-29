@@ -99,7 +99,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
 
                     var uriBuilder = new UriBuilder(invite.CallbackUrl);
                     var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-                    query["code"] = token;
+                    query["invite"] = token;
                     uriBuilder.Query = query.ToString();
 
                     var notification = _notificationManager.GetNewNotification<CorporateInviteEmailNotification>(invite.StoreId, "Store", invite.Language);
