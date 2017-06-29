@@ -137,7 +137,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 UserName = registerData.UserName,
                 UserType = AccountType.Customer.ToString(),
                 UserState = AccountState.Approved,
-                StoreId = registerData.StoreId
+                StoreId = registerData.StoreId,
+                MemberId = member?.Id
             };
 
             if (member == null)
