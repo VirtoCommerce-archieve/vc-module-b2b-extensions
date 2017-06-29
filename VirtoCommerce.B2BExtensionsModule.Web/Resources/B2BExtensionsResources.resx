@@ -118,7 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InviteEmailNotificationBody" xml:space="preserve">
-    <value>{{message}} &amp;gt;br&amp;lt; You have been invited to register in {{store_name}} as {{company_name}} company member. &amp;gt;br&amp;lt; Go to &amp;lt;strong&amp;gt;&amp;lt;a href="{{ url }}"&amp;gt;this page&amp;lt;/a&amp;gt;&amp;lt;/strong&amp;gt to create your account. &amp;gt;br&amp;lt; If you are unable to to click on the link above, simple copy the link and paste into the browser where you enter web addresses and press enter. &amp;gt;br&amp;lt; If you have any questions, please contact your company's account administrator, {{admin_name}} at {{admin_email}}.</value>
+    <value>{{message}}&lt;br&gt;
+&lt;p&gt;You have been invited to register in {{store_name}} as {{company_name}} company member.&lt;/p&gt;
+&lt;p&gt;Go to &lt;strong&gt;&lt;a href="{{ url }}"&gt;this page&lt;/a&gt;&lt;/strong&gt; to create your account.&lt;/p&gt;
+&lt;p&gt;If you are unable to to click on the link above, simple copy the link and paste into the browser where you enter web addresses and press enter.&lt;br&gt;
+If you have any questions, please contact your company's account administrator, {{admin_name}} at {{admin_email}}.&lt;/p&gt;</value>
   </data>
   <data name="InviteEmailNotificationSubject" xml:space="preserve">
     <value>Invitation to join {{company_name}}.</value>
