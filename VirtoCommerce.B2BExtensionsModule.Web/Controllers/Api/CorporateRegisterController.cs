@@ -61,6 +61,10 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         public async Task<IHttpActionResult> RegisterByInvite([FromBody] Register registerData, string invite)
         {
             var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().First();
+            if (member.SecurityAccounts.Any())
+            {
+                BadRequest("Account is already created");
+            }
             return await CreateAsync(registerData, member);
         }
 
@@ -69,8 +73,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> Invite(Invite invite)
         {
-            if (invite == null || string.IsNullOrEmpty(invite.StoreId) || string.IsNullOrEmpty(invite.CompanyId) || invite.Emails.IsNullOrEmpty() ||
-                string.IsNullOrEmpty(invite.AdminName) || string.IsNullOrEmpty(invite.AdminEmail) || string.IsNullOrEmpty(invite.CallbackUrl))
+            if (invite == null || !invite.IsValid())
             {
                 return BadRequest();
             }
