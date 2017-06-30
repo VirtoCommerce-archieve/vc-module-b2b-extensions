@@ -120,8 +120,8 @@
   <data name="InviteEmailNotificationBody" xml:space="preserve">
     <value>{{message}}&lt;br&gt;
 &lt;p&gt;You have been invited to register in {{store_name}} as {{company_name}} company member.&lt;/p&gt;
-&lt;p&gt;Go to &lt;strong&gt;&lt;a href="{{ url }}"&gt;this page&lt;/a&gt;&lt;/strong&gt; to create your account.&lt;/p&gt;
-&lt;p&gt;If you are unable to to click on the link above, simple copy the link and paste into the browser where you enter web addresses and press enter.&lt;br&gt;
+&lt;p&gt;Go to &lt;strong&gt;&lt;a href="{{ url }}"&gt;{{ url }}&lt;/a&gt;&lt;/strong&gt; to create your account.&lt;/p&gt;
+&lt;p&gt;If you are unable to click on the link above, simple copy the link and paste into the browser where you enter web addresses and press enter.&lt;br&gt;
 If you have any questions, please contact your company's account administrator, {{admin_name}} at {{admin_email}}.&lt;/p&gt;</value>
   </data>
   <data name="InviteEmailNotificationSubject" xml:space="preserve">
