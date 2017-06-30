@@ -7,6 +7,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Security
 {
     public class Register
     {
+        public string CompanyId { get; set; }
         public string CompanyName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -15,6 +16,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Security
         public string Password { get; set; }
 
         public string StoreId { get; set; }
+
+        public string[] Roles { get; set; }
 
         public bool IsValid()
         {

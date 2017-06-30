@@ -54,6 +54,58 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             return await CreateAsync(registerData, null);
         }
 
+        // POST: api/b2b/registerMember
+        [HttpPost]
+        [Route("registerMember")]
+        [AllowAnonymous]
+        [ResponseType(typeof(void))]
+        public async Task<IHttpActionResult> RegisterCompanyMember(Register registerData)
+        {
+            var newMember = new CompanyMember
+            {
+                FirstName = registerData.FirstName,
+                LastName = registerData.LastName,
+                FullName = string.Format("{0} {1}", registerData.FirstName, registerData.LastName),
+                Emails = new[] { registerData.Email },
+                Organizations = new[] { registerData.CompanyId },
+                IsActive = false
+            };
+            _memberService.SaveChanges(new[] { newMember });
+
+            var user = new ApplicationUserExtended
+            {
+                Email = registerData.Email,
+                Password = registerData.Password,
+                UserName = registerData.UserName,
+                UserType = AccountType.Customer.ToString(),
+                UserState = AccountState.Approved,
+                StoreId = registerData.StoreId,
+                MemberId = newMember.Id
+            };
+
+            if (registerData.Roles != null && registerData.Roles.Any())
+            {
+                var roles = new List<Role>();
+
+                foreach (string roleName in registerData.Roles)
+                {
+                    var role = _roleService.SearchRoles(new RoleSearchRequest { Keyword = roleName }).Roles.FirstOrDefault();
+
+                    if (role != null)
+                        roles.Add(role);
+                }
+
+                user.Roles = roles.ToArray();
+            }
+
+            var result = await _securityService.CreateAsync(user);
+
+            if (result.Succeeded)
+                return Ok();
+            else
+                return BadRequest(result.Errors.First());
+        }
+
         [HttpPost]
         [Route("register/{invite}")]
         [AllowAnonymous]
