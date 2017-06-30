@@ -26,8 +26,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Security
 
         public bool IsValid()
         {
-            return string.IsNullOrEmpty(StoreId) || string.IsNullOrEmpty(CompanyId) || Emails.IsNullOrEmpty() ||
-                   string.IsNullOrEmpty(AdminName) || string.IsNullOrEmpty(AdminEmail) || string.IsNullOrEmpty(CallbackUrl);
+            return !string.IsNullOrEmpty(StoreId) && !string.IsNullOrEmpty(CompanyId) && !Emails.IsNullOrEmpty() &&
+                   !string.IsNullOrEmpty(AdminName) && !string.IsNullOrEmpty(AdminEmail) && !string.IsNullOrEmpty(CallbackUrl);
         }
     }
 }
