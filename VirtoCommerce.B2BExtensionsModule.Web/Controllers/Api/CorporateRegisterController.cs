@@ -104,7 +104,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             if (result.Succeeded)
                 return Ok();
             else
-                return BadRequest(result.Errors.First());
+                return Ok(new { Message = result.Errors.First() });
         }
 
         [HttpPost]
@@ -116,7 +116,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().First();
             if (member.SecurityAccounts.Any())
             {
-                BadRequest("Account is already created");
+                return Ok(new { Message = "Account is already created" });
             }
             return await CreateAsync(registerData, member);
         }
@@ -128,14 +128,14 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         {
             if (invite == null || !invite.IsValid())
             {
-                return BadRequest();
+                return Ok(new { Message = "Invalid request data" });
             }
 
             var store = _storeService.GetById(invite.StoreId);
             var company = _memberService.GetByIds(new[] { invite.CompanyId }).FirstOrDefault();
             if (store == null || company == null)
             {
-                return BadRequest();
+                return Ok(new { Message = "Invalid request data" });
             }
 
             invite.Emails.ProcessWithPaging(50, (currentEmails, currentCount, totalCount) =>
@@ -183,7 +183,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         {
             if (!registerData.IsValid())
             {
-                return BadRequest();
+                return Ok(new { Message = "Invalid request data" });
             }
 
             var user = new ApplicationUserExtended
@@ -208,7 +208,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 var companySearchResult = _memberSearchService.SearchMembers(searchRequest);
                 if (companySearchResult.TotalCount > 0)
                 {
-                    return BadRequest("Company with same name already exist");
+                    return Ok(new { Message = "Company with same name already exist" });
                 }
 
                 var corporateAdminRole = _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.First();
@@ -255,7 +255,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             }
             else
             {
-                return BadRequest(result.Errors.First());
+                return Ok(new { Message = result.Errors.First() });
             }
 
             return Ok();
