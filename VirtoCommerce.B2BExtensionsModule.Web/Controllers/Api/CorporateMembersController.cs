@@ -56,8 +56,10 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 criteria = new MembersSearchCriteria();
             }
 
-            var result = _memberSearchService.SearchMembers(criteria);
-            return Ok(result);
+            GenericSearchResult<Member> members = _memberSearchService.SearchMembers(criteria);
+            var ids = members.Results.Select(m => m.Id).ToArray();
+            members.Results = _memberService.GetByIds(ids);
+            return Ok(members);
         }
 
         // GET: api/b2b/companyMember/{id}

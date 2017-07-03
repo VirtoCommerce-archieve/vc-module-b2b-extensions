@@ -4,5 +4,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model
 {
     public class CompanyMember : Employee
     {
+        public string Title { get; set; }
     }
 }

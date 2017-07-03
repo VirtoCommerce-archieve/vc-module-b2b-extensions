@@ -160,6 +160,10 @@
     <Compile Include="Migrations\201706160905380_Initial.Designer.cs">
       <DependentUpon>201706160905380_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707030842011_CompanyMember-Title.cs" />
+    <Compile Include="Migrations\201707030842011_CompanyMember-Title.Designer.cs">
+      <DependentUpon>201707030842011_CompanyMember-Title.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\Company.cs" />
     <Compile Include="Model\CompanyDataEntity.cs" />
@@ -184,6 +188,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201706160905380_Initial.resx">
       <DependentUpon>201706160905380_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707030842011_CompanyMember-Title.resx">
+      <DependentUpon>201707030842011_CompanyMember-Title.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\B2BExtensionsResources.resx" />
   </ItemGroup>

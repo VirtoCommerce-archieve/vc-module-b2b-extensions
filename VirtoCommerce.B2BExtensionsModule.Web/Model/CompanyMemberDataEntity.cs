@@ -6,6 +6,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model
 {
     public class CompanyMemberDataEntity : EmployeeDataEntity
     {
+        public string Title { get; set; }
+
         public override Member ToModel(Member member)
         {
             return base.ToModel(member);
@@ -18,6 +20,11 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model
 
         public override void Patch(MemberDataEntity memberEntity)
         {
+            var target = memberEntity as CompanyMemberDataEntity;
+            if (target != null)
+            {
+                target.Title = this.Title;
+            }
             base.Patch(memberEntity);
         }
     }

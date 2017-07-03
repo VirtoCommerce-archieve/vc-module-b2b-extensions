@@ -65,6 +65,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             {
                 FirstName = registerData.FirstName,
                 LastName = registerData.LastName,
+                Title = registerData.Title,
                 FullName = string.Format("{0} {1}", registerData.FirstName, registerData.LastName),
                 Emails = new[] { registerData.Email },
                 Organizations = new[] { registerData.CompanyId },
@@ -234,6 +235,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                         FullName = $"{registerData.FirstName} {registerData.LastName}",
                         FirstName = registerData.FirstName,
                         LastName = registerData.LastName,
+                        Title = registerData.Title,
                         Emails = new[] { registerData.Email },
                         IsActive = true,
                         Organizations = new List<string> { company.Id }
@@ -245,6 +247,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                     member.FullName = $"{registerData.FirstName} {registerData.LastName}";
                     member.FirstName = registerData.FirstName;
                     member.LastName = registerData.LastName;
+                    member.Title = registerData.Title;
                     member.IsActive = true;
                 }
 
