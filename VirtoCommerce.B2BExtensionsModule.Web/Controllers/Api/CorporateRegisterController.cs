@@ -10,12 +10,14 @@ using System.Web.Http.Results;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Notifications;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Security;
+using VirtoCommerce.B2BExtensionsModule.Web.Security;
 using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Notifications;
 using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.Platform.Core.Web.Security;
 
 namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
 {
@@ -46,8 +48,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
 
         // POST: api/b2b/register
         [HttpPost]
-        [Route("register")]
         [AllowAnonymous]
+        [Route("register")]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> Register(Register registerData)
         {
@@ -57,8 +59,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         // POST: api/b2b/registerMember
         [HttpPost]
         [Route("registerMember")]
-        [AllowAnonymous]
         [ResponseType(typeof(void))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
         public async Task<IHttpActionResult> RegisterCompanyMember(Register registerData)
         {
             var newMember = new CompanyMember
@@ -108,8 +110,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         }
 
         [HttpPost]
-        [Route("register/{invite}")]
         [AllowAnonymous]
+        [Route("register/{invite}")]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> RegisterByInvite([FromBody] Register registerData, string invite)
         {
@@ -124,6 +126,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpPost]
         [Route("invite")]
         [ResponseType(typeof(void))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
         public async Task<IHttpActionResult> Invite(Invite invite)
         {
             if (invite == null || !invite.IsValid())

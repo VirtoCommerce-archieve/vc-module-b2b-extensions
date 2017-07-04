@@ -3,9 +3,11 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
+using VirtoCommerce.B2BExtensionsModule.Web.Security;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
+using VirtoCommerce.Platform.Core.Web.Security;
 
 namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
 {
@@ -25,6 +27,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpGet]
         [Route("company/{id}")]
         [ResponseType(typeof(Company))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyInfo)]
         public IHttpActionResult GetCompanyById(string id)
         {
             var retVal = _memberService.GetByIds(new[] { id }).FirstOrDefault();
@@ -39,6 +42,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpPost]
         [Route("company")]
         [ResponseType(typeof(void))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyInfo)]
         public IHttpActionResult UpdateCompany(Company company)
         {
             _memberService.SaveChanges(new[] { company });
@@ -49,6 +53,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpPost]
         [Route("companyMembers")]
         [ResponseType(typeof(GenericSearchResult<CompanyMember>))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
         public IHttpActionResult GetCompanyMembers(MembersSearchCriteria criteria)
         {
             if (criteria == null)
@@ -66,6 +71,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpGet]
         [Route("companyMember/{id}")]
         [ResponseType(typeof(CompanyMember))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
         public IHttpActionResult GetCompanyMemberById(string id)
         {
             var retVal = _memberService.GetByIds(new[] { id }).FirstOrDefault();
@@ -80,6 +86,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpPost]
         [Route("companyMember")]
         [ResponseType(typeof(void))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
         public IHttpActionResult UpdateMember(CompanyMember companyMember)
         {
             _memberService.SaveChanges(new[] { companyMember });
@@ -90,6 +97,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [HttpDelete]
         [Route("companyMembers")]
         [ResponseType(typeof(void))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
         public IHttpActionResult DeleteMembers([FromUri] string[] ids)
         {
             _memberService.Delete(ids);

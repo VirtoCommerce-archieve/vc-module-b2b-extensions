@@ -5,6 +5,7 @@ using VirtoCommerce.B2BExtensionsModule.Web.Model;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Notifications;
 using VirtoCommerce.B2BExtensionsModule.Web.Repositories;
 using VirtoCommerce.B2BExtensionsModule.Web.Resources;
+using VirtoCommerce.B2BExtensionsModule.Web.Security;
 using VirtoCommerce.B2BExtensionsModule.Web.Services;
 using VirtoCommerce.CustomerModule.Data.Model;
 using VirtoCommerce.CustomerModule.Data.Repositories;
@@ -86,8 +87,9 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
         {
             var roleManagementService = _container.Resolve<IRoleManagementService>();
             var securityService = _container.Resolve<ISecurityService>();
-            var role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.FirstOrDefault();
 
+            // Corporate administrator
+            var role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.FirstOrDefault();
             if (role == null)
             {
                 role = new Role
@@ -99,6 +101,35 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
 
             var allPermissions = securityService.GetAllPermissions();
             role.Permissions = allPermissions.Where(p => p.ModuleId == ModuleInfo.Id).ToArray();
+
+            roleManagementService.AddOrUpdateRole(role);
+
+            // Corporate manager
+            role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleManagerRole }).Roles.FirstOrDefault();
+            if (role == null)
+            {
+                role = new Role
+                {
+                    Name = Constants.ModuleManagerRole,
+                    Description = Constants.ModuleManagerRoleDescription
+                };
+            }
+
+            var managerPermissions = new[] { B2BPredefinedPermissions.CompanyInfo, B2BPredefinedPermissions.CompanyMembers };
+            role.Permissions = allPermissions.Where(p => managerPermissions.Contains(p.Id)).ToArray();
+
+            roleManagementService.AddOrUpdateRole(role);
+
+            // Employee
+            role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleEmployeeRole }).Roles.FirstOrDefault();
+            if (role == null)
+            {
+                role = new Role
+                {
+                    Name = Constants.ModuleEmployeeRole,
+                    Description = Constants.ModuleEmployeeRoleDescription
+                };
+            }
 
             roleManagementService.AddOrUpdateRole(role);
         }
