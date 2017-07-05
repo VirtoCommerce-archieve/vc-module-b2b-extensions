@@ -18,7 +18,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Security
 
         public string StoreId { get; set; }
 
-        public string[] Roles { get; set; }
+        public string Role { get; set; }
 
         public bool IsValid()
         {

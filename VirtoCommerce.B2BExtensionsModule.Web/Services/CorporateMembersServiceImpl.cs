@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Data.Repositories;
 using VirtoCommerce.CustomerModule.Data.Services;
+using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Customer.Events;
 using VirtoCommerce.Domain.Customer.Model;
@@ -23,10 +25,23 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Services
             _securityService = securityService;
         }
 
+        public override GenericSearchResult<Member> SearchMembers(MembersSearchCriteria criteria)
+        {
+            var retVal = base.SearchMembers(criteria);
+            ProcessAccounts(retVal.Results);
+            return retVal;
+        }
+
         public override Member[] GetByIds(string[] memberIds, string responseGroup = null, string[] memberTypes = null)
         {
             var retVal = base.GetByIds(memberIds, responseGroup, memberTypes);
-            Parallel.ForEach(retVal, new ParallelOptions { MaxDegreeOfParallelism = 10 }, member =>
+            ProcessAccounts(retVal);
+            return retVal;
+        }
+
+        private void ProcessAccounts(ICollection<Member> members)
+        {
+            Parallel.ForEach(members, new ParallelOptions { MaxDegreeOfParallelism = 10 }, member =>
             {
                 //Fully load security accounts for members which support them 
                 var hasSecurityAccounts = member as IHasSecurityAccounts;
@@ -41,7 +56,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Services
                     }
                 }
             });
-            return retVal;
         }
     }
 }

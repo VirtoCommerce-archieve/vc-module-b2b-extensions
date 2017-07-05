@@ -86,17 +86,14 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 MemberId = newMember.Id
             };
 
-            if (registerData.Roles != null && registerData.Roles.Any())
+            if (registerData.Role != null)
             {
                 var roles = new List<Role>();
+                
+                var role = _roleService.SearchRoles(new RoleSearchRequest { Keyword = registerData.Role }).Roles.FirstOrDefault();
 
-                foreach (string roleName in registerData.Roles)
-                {
-                    var role = _roleService.SearchRoles(new RoleSearchRequest { Keyword = roleName }).Roles.FirstOrDefault();
-
-                    if (role != null)
-                        roles.Add(role);
-                }
+                if (role != null)
+                    roles.Add(role);
 
                 user.Roles = roles.ToArray();
             }
