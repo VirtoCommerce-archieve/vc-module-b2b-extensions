@@ -99,8 +99,16 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
                 };
             }
 
+            // All available permissions
             var allPermissions = securityService.GetAllPermissions();
-            role.Permissions = allPermissions.Where(p => p.ModuleId == ModuleInfo.Id).ToArray();
+
+            // Add security:call_api permissions, because B2B users is customers (and have no access to admin site), but must have access to platform api
+            // Add platform:security:read and platform:security:update permissions to read and assign specified role to B2B user
+            var callApiPermission = allPermissions.Where(p => p.Id == PredefinedPermissions.SecurityCallApi).ToArray();
+            var rolePermissions = allPermissions.Where(p => new[] {PredefinedPermissions.SecurityQuery, PredefinedPermissions.SecurityUpdate}.Contains(p.Id)).ToArray();
+
+            // Corporate administrator: security:call_api + all available B2B permissions + platform:security:read and platform:security:update
+            role.Permissions = callApiPermission.Concat(allPermissions.Where(p => p.ModuleId == ModuleInfo.Id).Concat(rolePermissions)).ToArray();
 
             roleManagementService.AddOrUpdateRole(role);
 
@@ -115,8 +123,9 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
                 };
             }
 
+            // Corporate anager: security:call_api + B2B company & company members edit permissions + platform:security:read and platform:security:update
             var managerPermissions = new[] { B2BPredefinedPermissions.CompanyInfo, B2BPredefinedPermissions.CompanyMembers };
-            role.Permissions = allPermissions.Where(p => managerPermissions.Contains(p.Id)).ToArray();
+            role.Permissions = callApiPermission.Concat(allPermissions.Where(p => managerPermissions.Contains(p.Id)).Concat(rolePermissions)).ToArray();
 
             roleManagementService.AddOrUpdateRole(role);
 
@@ -130,6 +139,9 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
                     Description = Constants.ModuleEmployeeRoleDescription
                 };
             }
+
+            // Employee: security:call_api permission only
+            role.Permissions = callApiPermission.ToArray();
 
             roleManagementService.AddOrUpdateRole(role);
         }
