@@ -22,7 +22,7 @@ using VirtoCommerce.Platform.Core.Web.Security;
 namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
 {
     [RoutePrefix("api/b2b")]
-    public class CorporateRegisterController : ApiController
+    public class CorporateRegisterController : CorporateControllerBase
     {
         private readonly INotificationManager _notificationManager;
         private readonly IStoreService _storeService;
@@ -37,6 +37,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             IMemberSearchService memberSearchService,
             IRoleManagementService roleService,
             ISecurityService securityService)
+            : base(securityService)
         {
             _notificationManager = notificationManager;
             _storeService = storeService;
