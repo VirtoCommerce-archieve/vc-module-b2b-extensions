@@ -38,6 +38,21 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             return Ok();
         }
 
+        // GET: api/b2b/company/{id}
+        [HttpGet]
+        [Route("companyByCustomerId/{id}")]
+        [ResponseType(typeof(Company))]
+        [CheckPermission(Permission = B2BPredefinedPermissions.CompanyInfo)]
+        public IHttpActionResult GetCompanyByCustomerId(string id)
+        {
+            var member = _memberService.GetByIds(new[] { id }).Cast<CompanyMember>().FirstOrDefault();
+            if (member != null && member.Organizations.Any()) {
+                var companyId = member.Organizations.FirstOrDefault();
+                return GetCompanyById(companyId);
+            }
+            return NotFound();
+        }
+
         // POST: api/b2b/company
         [HttpPost]
         [Route("company")]
