@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.B2BExtensionsModule.Web.Model.Extensions;
 using VirtoCommerce.CustomerModule.Data.Repositories;
 using VirtoCommerce.CustomerModule.Data.Services;
 using VirtoCommerce.Domain.Commerce.Model.Search;
@@ -28,34 +29,15 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Services
         public override GenericSearchResult<Member> SearchMembers(MembersSearchCriteria criteria)
         {
             var retVal = base.SearchMembers(criteria);
-            ProcessAccounts(retVal.Results);
+            retVal.Results.ProcessSecurityAccounts(_securityService);
             return retVal;
         }
 
         public override Member[] GetByIds(string[] memberIds, string responseGroup = null, string[] memberTypes = null)
         {
             var retVal = base.GetByIds(memberIds, responseGroup, memberTypes);
-            ProcessAccounts(retVal);
+            retVal.ProcessSecurityAccounts(_securityService);
             return retVal;
-        }
-
-        private void ProcessAccounts(ICollection<Member> members)
-        {
-            Parallel.ForEach(members, new ParallelOptions { MaxDegreeOfParallelism = 10 }, member =>
-            {
-                //Fully load security accounts for members which support them 
-                var hasSecurityAccounts = member as IHasSecurityAccounts;
-                if (hasSecurityAccounts != null)
-                {
-                    //Fully load all security accounts associated with this contact
-                    foreach (var account in hasSecurityAccounts.SecurityAccounts.ToArray())
-                    {
-                        var result = Task.Run(() => _securityService.FindByIdAsync(account.Id, UserDetails.Full));
-                        hasSecurityAccounts.SecurityAccounts.Remove(account);
-                        hasSecurityAccounts.SecurityAccounts.Add(result.Result);
-                    }
-                }
-            });
         }
     }
 }

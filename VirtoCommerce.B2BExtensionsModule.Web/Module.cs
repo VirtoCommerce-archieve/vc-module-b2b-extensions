@@ -9,6 +9,7 @@ using VirtoCommerce.B2BExtensionsModule.Web.Security;
 using VirtoCommerce.B2BExtensionsModule.Web.Services;
 using VirtoCommerce.CustomerModule.Data.Model;
 using VirtoCommerce.CustomerModule.Data.Repositories;
+using VirtoCommerce.CustomerModule.Data.Services;
 using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -49,7 +50,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
             _container.RegisterInstance<Func<IMemberRepository>>(customerRepositoryFactory);
 
             _container.RegisterType<IMemberService, CorporateMembersServiceImpl>();
-            _container.RegisterType<IMemberSearchService, CorporateMembersServiceImpl>();
+            _container.RegisterType<MemberSearchServiceDecorator, CorporateMemberSearchServiceDecorator>();
         }
 
         public override void PostInitialize()
