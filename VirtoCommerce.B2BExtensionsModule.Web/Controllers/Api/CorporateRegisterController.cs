@@ -107,6 +107,29 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 return Ok(new { Message = result.Errors.First() });
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("register/{invite}")]
+        [ResponseType(typeof(Register))]
+        public async Task<IHttpActionResult> GetRegisterDataByInvite(string invite)
+        {
+            var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().FirstOrDefault();
+            if (member == null)
+            {
+                return Ok(new {Message = "Your invite revoked"});
+            }
+            if (member.SecurityAccounts.Any())
+            {
+                return Ok(new { Message = "Account is already created" });
+            }
+            var company = _memberService.GetByIds(new[] { member.Organizations.FirstOrDefault() }).Cast<Company>().FirstOrDefault();
+            return Ok(new Register
+            {
+                CompanyName = company?.Name,
+                Email = member.Emails.FirstOrDefault()
+            });
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [Route("register/{invite}")]
@@ -209,11 +232,16 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 var companySearchResult = _memberSearchService.SearchMembers(searchRequest);
                 if (companySearchResult.TotalCount > 0)
                 {
-                    return Ok(new { Message = "Company with same name already exist" });
+                    return Ok(new {Message = "Company with same name already exist"});
                 }
 
-                var corporateAdminRole = _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.First();
-                user.Roles = new[] { corporateAdminRole };
+                var corporateAdminRole = _roleService.SearchRoles(new RoleSearchRequest {Keyword = Constants.ModuleAdminRole}).Roles.First();
+                user.Roles = new[] {corporateAdminRole};
+            }
+            else
+            {
+                var employeeRole = _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleEmployeeRole }).Roles.First();
+                user.Roles = new[] { employeeRole };
             }
 
             //Register user in VC Platform (create security account)
