@@ -48,20 +48,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             return Ok();
         }
 
-        // GET: api/b2b/organizationsByCustomerId/{id}
-        [HttpGet]
-        [Route("organizationsByCustomerId/{id}")]
-        [ResponseType(typeof(string))]
-        public IHttpActionResult GetOrganizationsByCustomerId(string id)
-        {
-            var member = _memberService.GetByIds(new[] { id }).Cast<CompanyMember>().FirstOrDefault();
-            CheckCurrentUserHasPermissionForCompanyMember(member?.SecurityAccounts.Select(x => x.UserName));
-            if (member != null && member.Organizations.Any()) {
-                return Ok(member.Organizations);
-            }
-            return NotFound();
-        }
-
         // POST: api/b2b/company
         [HttpPost]
         [Route("company")]
