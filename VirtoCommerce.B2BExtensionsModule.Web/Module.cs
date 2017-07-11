@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
@@ -88,59 +89,25 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
         {
             var roleManagementService = _container.Resolve<IRoleManagementService>();
             var securityService = _container.Resolve<ISecurityService>();
-
-            // Corporate administrator
-            var role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleAdminRole }).Roles.FirstOrDefault();
-            if (role == null)
-            {
-                role = new Role
-                {
-                    Name = Constants.ModuleAdminRole,
-                    Description = Constants.ModuleAdminRoleDescription
-                };
-            }
-
-            // All available permissions
+            
             var allPermissions = securityService.GetAllPermissions();
+            var managerPermissions = new[] { B2BPredefinedPermissions.CompanyInfo, B2BPredefinedPermissions.CompanyMembers };
+
+            InitializeRole(roleManagementService, Constants.ModuleAdminRole, Constants.ModuleAdminRoleDescription, allPermissions.Where(p => p.ModuleId == ModuleInfo.Id));
+            InitializeRole(roleManagementService, Constants.ModuleManagerRole, Constants.ModuleManagerRoleDescription, allPermissions.Where(p => managerPermissions.Contains(p.Id)));
+            InitializeRole(roleManagementService, Constants.ModuleEmployeeRole, Constants.ModuleEmployeeRoleDescription, null);
+        }
+
+        private void InitializeRole(IRoleManagementService roleManagementService, string name, string description, IEnumerable<Permission> permissions)
+        {
+            // Corporate administrator
+            var role = roleManagementService.SearchRoles(new RoleSearchRequest {Keyword = name}).Roles.FirstOrDefault() ?? new Role {Name = name, Description = description};
 
             // Add security:call_api permissions, because B2B users is customers (and have no access to admin site), but must have access to platform api
-            var callApiPermission = allPermissions.Where(p => p.Id == PredefinedPermissions.SecurityCallApi).ToArray();
+            var callApiPermission = PredefinedPermissions.Permissions.Where(p => p.Id == PredefinedPermissions.SecurityCallApi).ToArray();
 
-            // Corporate administrator: security:call_api + all available B2B permissions + platform:security:read and platform:security:update
-            role.Permissions = callApiPermission.Concat(allPermissions.Where(p => p.ModuleId == ModuleInfo.Id)).ToArray();
-
-            roleManagementService.AddOrUpdateRole(role);
-
-            // Corporate manager
-            role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleManagerRole }).Roles.FirstOrDefault();
-            if (role == null)
-            {
-                role = new Role
-                {
-                    Name = Constants.ModuleManagerRole,
-                    Description = Constants.ModuleManagerRoleDescription
-                };
-            }
-
-            // Corporate anager: security:call_api + B2B company & company members edit permissions + platform:security:read and platform:security:update
-            var managerPermissions = new[] { B2BPredefinedPermissions.CompanyInfo, B2BPredefinedPermissions.CompanyMembers };
-            role.Permissions = callApiPermission.Concat(allPermissions.Where(p => managerPermissions.Contains(p.Id))).ToArray();
-
-            roleManagementService.AddOrUpdateRole(role);
-
-            // Employee
-            role = roleManagementService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleEmployeeRole }).Roles.FirstOrDefault();
-            if (role == null)
-            {
-                role = new Role
-                {
-                    Name = Constants.ModuleEmployeeRole,
-                    Description = Constants.ModuleEmployeeRoleDescription
-                };
-            }
-
-            // Employee: security:call_api permission only
-            role.Permissions = callApiPermission.ToArray();
+            // Corporate administrator: security:call_api + permissions
+            role.Permissions = callApiPermission.Concat(permissions ?? Enumerable.Empty<Permission>()).ToArray();
 
             roleManagementService.AddOrUpdateRole(role);
         }

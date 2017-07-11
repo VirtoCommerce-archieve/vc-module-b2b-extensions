@@ -48,14 +48,14 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             return Ok();
         }
 
-        // GET: api/b2b/company/{id}
+        // GET: api/b2b/organizationsByCustomerId/{id}
         [HttpGet]
         [Route("organizationsByCustomerId/{id}")]
         [ResponseType(typeof(string))]
         public IHttpActionResult GetOrganizationsByCustomerId(string id)
         {
             var member = _memberService.GetByIds(new[] { id }).Cast<CompanyMember>().FirstOrDefault();
-            CheckCurrentUserHasPermissionForUser(B2BPredefinedPermissions.CompanyMembers, member?.SecurityAccounts.Select(x => x.UserName));
+            CheckCurrentUserHasPermissionForCompanyMember(member?.SecurityAccounts.Select(x => x.UserName));
             if (member != null && member.Organizations.Any()) {
                 return Ok(member.Organizations);
             }
@@ -98,7 +98,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         public IHttpActionResult GetCompanyMemberById(string id)
         {
             var retVal = _memberService.GetByIds(new[] { id }).Cast<CompanyMember>().FirstOrDefault();
-            CheckCurrentUserHasPermissionForUser(B2BPredefinedPermissions.CompanyMembers, retVal?.SecurityAccounts.Select(x => x.UserName));
+            CheckCurrentUserHasPermissionForCompanyMember(retVal?.SecurityAccounts.Select(x => x.UserName));
             if (retVal != null)
             {
                 return Ok((dynamic)retVal);
@@ -112,7 +112,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(ApplicationUserExtended))]
         public async Task<IHttpActionResult> GetUserByNameAsync(string userName)
         {
-            CheckCurrentUserHasPermissionForUser(B2BPredefinedPermissions.CompanyMembers, new [] { userName });
+            CheckCurrentUserHasPermissionForCompanyMember(new [] { userName });
             var retVal = await _securityService.FindByNameAsync(userName, UserDetails.Full);
             return Ok(retVal);
         }
@@ -123,7 +123,9 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult UpdateMember(CompanyMember companyMember)
         {
-            CheckCurrentUserHasPermissionForUser(B2BPredefinedPermissions.CompanyMembers, companyMember?.SecurityAccounts.Select(x => x.UserName));
+            // Request company member by id to prevent security violation when someone can pass wrong security account to company member model
+            var requestedCompanyMember = _memberService.GetByIds(new []{ companyMember.Id }).Cast<CompanyMember>().FirstOrDefault();
+            CheckCurrentUserHasPermissionForCompanyMember(requestedCompanyMember?.SecurityAccounts.Select(x => x.UserName));
             _memberService.SaveChanges(new[] { companyMember });
             return StatusCode(HttpStatusCode.NoContent);
         }
@@ -170,7 +172,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             var currentMember = _memberService.GetByIds(new[] {currentUser.MemberId}).Cast<CompanyMember>().FirstOrDefault();
             if (currentMember != null)
             {
-                var result = _roleService.SearchRoles(new RoleSearchRequest()).Roles
+                var result = _roleService.SearchRoles(new RoleSearchRequest { TakeCount = int.MaxValue }).Roles
                     .Where(x => x.Name == Constants.ModuleAdminRole || x.Name == Constants.ModuleManagerRole ||
                                 x.Name == Constants.ModuleEmployeeRole);
                 return Ok(result);

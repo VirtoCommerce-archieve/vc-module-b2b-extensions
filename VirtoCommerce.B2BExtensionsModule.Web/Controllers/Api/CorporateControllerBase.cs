@@ -16,14 +16,13 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             _securityService = securityService;
         }
 
-        protected void CheckCurrentUserHasPermissionForUser(string permission, IEnumerable<string> userNames)
+        protected void CheckCurrentUserHasPermissionForCompanyMember(IEnumerable<string> companyMemberUserNames)
         {
-            //Scope bound security check
-            if (!_securityService.UserHasAnyPermission(User.Identity.Name, null, permission) &&
-                !(userNames != null && userNames.Contains(User.Identity.Name) && permission == B2BPredefinedPermissions.CompanyMembers))
-            {
-                throw new HttpResponseException(HttpStatusCode.Unauthorized);
-            }
+            // Check if user has permission
+            if (_securityService.UserHasAnyPermission(User.Identity.Name, null, B2BPredefinedPermissions.CompanyMembers) ||
+            // Allow user to read & update himself
+                companyMemberUserNames != null && companyMemberUserNames.Contains(User.Identity.Name)) return;
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
     }
 }

@@ -111,12 +111,12 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [AllowAnonymous]
         [Route("register/{invite}")]
         [ResponseType(typeof(Register))]
-        public async Task<IHttpActionResult> GetRegisterDataByInvite(string invite)
+        public IHttpActionResult GetRegisterDataByInvite(string invite)
         {
             var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().FirstOrDefault();
             if (member == null)
             {
-                return Ok(new {Message = "Your invite revoked"});
+                return Ok(new { Message = "Your invite revoked" });
             }
             if (member.SecurityAccounts.Any())
             {
@@ -148,7 +148,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [Route("invite")]
         [ResponseType(typeof(void))]
         [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
-        public async Task<IHttpActionResult> Invite(Invite invite)
+        public IHttpActionResult Invite(Invite invite)
         {
             if (invite == null || !invite.IsValid())
             {
@@ -226,7 +226,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
                 //Check same company exist
                 var searchRequest = new MembersSearchCriteria
                 {
-                    Keyword = registerData.CompanyName,
+                    SearchPhrase = registerData.CompanyName,
                     MemberType = typeof(Company).Name
                 };
                 var companySearchResult = _memberSearchService.SearchMembers(searchRequest);
