@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.Results;
+using FluentValidation;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
+using VirtoCommerce.B2BExtensionsModule.Web.Model.Extensions;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Notifications;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Security;
 using VirtoCommerce.B2BExtensionsModule.Web.Security;
@@ -27,174 +28,172 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         private readonly INotificationManager _notificationManager;
         private readonly IStoreService _storeService;
         private readonly IMemberService _memberService;
-        private readonly IMemberSearchService _memberSearchService;
         private readonly IRoleManagementService _roleService;
         private readonly ISecurityService _securityService;
 
-        public CorporateRegisterController(INotificationManager notificationManager,
-            IStoreService storeService,
-            IMemberService memberService,
-            IMemberSearchService memberSearchService,
-            IRoleManagementService roleService,
-            ISecurityService securityService)
-            : base(securityService)
+        private readonly IValidator<CompanyOwnerRegistrationData> _companyOwnerRegistrationDataValidator;
+        private readonly IValidator<CompanyMemberRegistrationData> _companyMemberRegistrationDataValidator;
+        private readonly IValidator<CompanyMemberRegistrationByInviteData> _companyMemberRegistrationByInviteDataValidator;
+
+        private readonly IValidator<Invite> _inviteValidator;
+        private readonly IValidator<InviteData> _inviteDataValidator;
+
+        [CLSCompliant(false)]
+        public CorporateRegisterController(INotificationManager notificationManager, IStoreService storeService,
+            IMemberService memberService, IRoleManagementService roleService, ISecurityService securityService,
+            IValidatorFactory validatorFactory) : base(securityService)
         {
             _notificationManager = notificationManager;
             _storeService = storeService;
             _memberService = memberService;
-            _memberSearchService = memberSearchService;
             _roleService = roleService;
             _securityService = securityService;
+
+            _companyOwnerRegistrationDataValidator = validatorFactory.GetValidator<CompanyOwnerRegistrationData>();
+            _companyMemberRegistrationDataValidator = validatorFactory.GetValidator<CompanyMemberRegistrationData>();
+            _companyMemberRegistrationByInviteDataValidator = validatorFactory.GetValidator<CompanyMemberRegistrationByInviteData>();
+
+            _inviteValidator = validatorFactory.GetValidator<Invite>();
+            _inviteDataValidator = validatorFactory.GetValidator<InviteData>();
         }
 
         // POST: api/b2b/register
+        /// <summary>
+        /// Register company owner
+        /// </summary>
+        /// <param name="registrationData">Company owner data</param>
         [HttpPost]
         [AllowAnonymous]
         [Route("register")]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Register(Register registerData)
+        public async Task<IHttpActionResult> RegisterCompanOwner(CompanyOwnerRegistrationData registrationData)
         {
-            return await CreateAsync(registerData, null);
+            Company company = null;
+            return await RegisterAsync(_companyOwnerRegistrationDataValidator, registrationData, Constants.ModuleAdminRole, null, () =>
+                {
+                    company = new Company
+                    {
+                        Name = registrationData.CompanyName
+                    };
+                    _memberService.SaveChanges(new[] { company });
+                },
+                user => registrationData.ToCompanyMember(new CompanyMember(), user.Id),
+                member => member.Organizations = new List<string> { company.Id });
         }
 
         // POST: api/b2b/registerMember
+        /// <summary>
+        /// Register company member manually
+        /// </summary>
+        /// <param name="registrationData">Company member data</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("registerMember")]
         [ResponseType(typeof(void))]
         [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
-        public async Task<IHttpActionResult> RegisterCompanyMember(Register registerData)
+        public async Task<IHttpActionResult> RegisterCompanyMember(CompanyMemberRegistrationData registrationData)
         {
-            var newMember = new CompanyMember
-            {
-                FirstName = registerData.FirstName,
-                LastName = registerData.LastName,
-                Title = registerData.Title,
-                FullName = string.Format("{0} {1}", registerData.FirstName, registerData.LastName),
-                Emails = new[] { registerData.Email },
-                Organizations = new[] { registerData.CompanyId },
-                IsActive = false
-            };
-            _memberService.SaveChanges(new[] { newMember });
-
-            var user = new ApplicationUserExtended
-            {
-                Email = registerData.Email,
-                Password = registerData.Password,
-                UserName = registerData.UserName,
-                UserType = AccountType.Customer.ToString(),
-                UserState = AccountState.Approved,
-                StoreId = registerData.StoreId,
-                MemberId = newMember.Id
-            };
-
-            if (registerData.Role != null)
-            {
-                var roles = new List<Role>();
-                
-                var role = _roleService.SearchRoles(new RoleSearchRequest { Keyword = registerData.Role }).Roles.FirstOrDefault();
-
-                if (role != null)
-                    roles.Add(role);
-
-                user.Roles = roles.ToArray();
-            }
-
-            var result = await _securityService.CreateAsync(user);
-
-            if (result.Succeeded)
-                return Ok();
-            else
-                return Ok(new { Message = result.Errors.First() });
+            return await RegisterAsync(_companyMemberRegistrationDataValidator, registrationData, registrationData.Role, null,
+                null, user => registrationData.ToCompanyMember(new CompanyMember(), user.Id), null);
         }
 
+        // GET: api/b2b/registerMember/:invite
+        /// <summary>
+        /// Get company member data from invite
+        /// </summary>
+        /// <param name="invite">Unique invite identifier from invitation url</param>
         [HttpGet]
         [AllowAnonymous]
-        [Route("register/{invite}")]
-        [ResponseType(typeof(Register))]
-        public IHttpActionResult GetRegisterDataByInvite(string invite)
+        [Route("registerMember/{invite}")]
+        [ResponseType(typeof(CompanyMemberRegistrationByInviteData))]
+        public IHttpActionResult GetRegistrationDataByInvite(string invite)
         {
-            var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().FirstOrDefault();
-            if (member == null)
-            {
-                return Ok(new { Message = "Your invite revoked" });
-            }
-            if (member.SecurityAccounts.Any())
-            {
-                return Ok(new { Message = "Account is already created" });
-            }
-            var company = _memberService.GetByIds(new[] { member.Organizations.FirstOrDefault() }).Cast<Company>().FirstOrDefault();
-            return Ok(new Register
+            var validationResult = _inviteValidator.Validate(new Invite { Value = invite });
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.BuildModelState());
+
+            var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().First();
+            var company = _memberService.GetByIds(new[] { member.Organizations.First() }).Cast<Company>().First();
+            return Ok(new CompanyMemberRegistrationByInviteData
             {
                 CompanyName = company?.Name,
-                Email = member.Emails.FirstOrDefault()
+                Email = member.Emails.First()
             });
         }
 
+        // POST: /api/b2b/registerMember/:invite
+        /// <summary>
+        /// Register company member by invite
+        /// </summary>
+        /// <param name="registrationData">Company member data</param
+        /// <param name="invite">Unique invite identifier from invitation url</param>
         [HttpPost]
         [AllowAnonymous]
-        [Route("register/{invite}")]
+        [Route("registerMember/{invite}")]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> RegisterByInvite([FromBody] Register registerData, string invite)
+        public async Task<IHttpActionResult> RegisterCompanyMemberByInvite([FromBody] CompanyMemberRegistrationByInviteData registrationData, string invite)
         {
+            var validationResult = _inviteValidator.Validate(new Invite { Value = invite });
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.BuildModelState());
+
             var member = _memberService.GetByIds(new[] { invite }).Cast<CompanyMember>().First();
-            if (member.SecurityAccounts.Any())
-            {
-                return Ok(new { Message = "Account is already created" });
-            }
-            return await CreateAsync(registerData, member);
+            return await RegisterAsync(_companyMemberRegistrationByInviteDataValidator, registrationData, Constants.ModuleEmployeeRole,
+                user => user.MemberId = member.Id,
+                null, user => registrationData.ToCompanyMember(member, member.Id), null);
         }
 
+        // POST: /api/b2b/invite
+        /// <summary>
+        /// Create invite for specified emails
+        /// </summary>
+        /// <param name="inviteData">Data used to send invitation link to invited user</param>
         [HttpPost]
         [Route("invite")]
         [ResponseType(typeof(void))]
         [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
-        public IHttpActionResult Invite(Invite invite)
+        public IHttpActionResult Invite(InviteData inviteData)
         {
-            if (invite == null || !invite.IsValid())
-            {
-                return Ok(new { Message = "Invalid request data" });
-            }
+            var validationResult = _inviteDataValidator.Validate(inviteData);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.BuildModelState());
 
-            var store = _storeService.GetById(invite.StoreId);
-            var company = _memberService.GetByIds(new[] { invite.CompanyId }).FirstOrDefault();
-            if (store == null || company == null)
-            {
-                return Ok(new { Message = "Invalid request data" });
-            }
+            var store = _storeService.GetById(inviteData.StoreId);
+            var company = _memberService.GetByIds(new[] { inviteData.CompanyId }).First();
 
-            invite.Emails.ProcessWithPaging(50, (currentEmails, currentCount, totalCount) =>
+            inviteData.Emails.ProcessWithPaging(50, (currentEmails, currentCount, totalCount) =>
             {
                 var companyMembers = currentEmails.Select(email => new CompanyMember
                 {
                     FullName = email,
                     Emails = new[] { email },
-                    Organizations = new[] { invite.CompanyId },
+                    Organizations = new[] { inviteData.CompanyId },
                     IsActive = false
                 }).ToArray();
-                _memberService.SaveChanges(companyMembers.ToArray());
+                _memberService.SaveChanges(companyMembers.Cast<Member>().ToArray());
 
                 foreach (var companyMember in companyMembers)
                 {
                     var token = companyMember.Id;
 
-                    var uriBuilder = new UriBuilder(invite.CallbackUrl);
+                    var uriBuilder = new UriBuilder(inviteData.CallbackUrl);
                     var query = HttpUtility.ParseQueryString(uriBuilder.Query);
                     query["invite"] = token;
                     uriBuilder.Query = query.ToString();
 
-                    var notification = _notificationManager.GetNewNotification<CorporateInviteEmailNotification>(invite.StoreId, "Store", invite.Language);
+                    var notification = _notificationManager.GetNewNotification<CorporateInviteEmailNotification>(inviteData.StoreId, "Store", inviteData.Language);
                     notification.Url = uriBuilder.ToString();
                     notification.CompanyName = company.Name;
-                    notification.Message = invite.Message;
+                    notification.Message = inviteData.Message;
 
                     notification.StoreName = store.Name;
                     notification.Sender = store.Email;
                     notification.IsActive = true;
 
-                    notification.AdminName = invite.AdminName;
-                    notification.AdminEmail = invite.AdminEmail;
+                    notification.AdminName = inviteData.AdminName;
+                    notification.AdminEmail = inviteData.AdminEmail;
 
-                    notification.Recipient = companyMember.Emails.First();
+                    notification.Recipient = companyMember.Emails.Single();
 
                     _notificationManager.ScheduleSendNotification(notification);
                 }
@@ -203,88 +202,42 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        private async Task<IHttpActionResult> CreateAsync(Register registerData, CompanyMember member)
+        private async Task<IHttpActionResult> RegisterAsync<T>(IValidator<T> validator, T registrationData, string roleName, Action<ApplicationUserExtended> prepareSecurity, Action prepare,
+            Func<ApplicationUserExtended, CompanyMember> build, Action<CompanyMember> complete)
+            where T : RegistrationDataBase
         {
-            if (!registerData.IsValid())
-            {
-                return Ok(new { Message = "Invalid request data" });
-            }
+            var validationResult = validator.Validate(registrationData);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.BuildModelState());
 
-            var user = new ApplicationUserExtended
-            {
-                Email = member?.Emails.FirstOrDefault() ?? registerData.Email,
-                Password = registerData.Password,
-                UserName = registerData.UserName,
-                UserType = AccountType.Customer.ToString(),
-                UserState = AccountState.Approved,
-                StoreId = registerData.StoreId,
-                MemberId = member?.Id
-            };
+            var user = registrationData.ToApplicationUserExtended();
 
-            if (member == null)
-            {
-                //Check same company exist
-                var searchRequest = new MembersSearchCriteria
-                {
-                    SearchPhrase = registerData.CompanyName,
-                    MemberType = typeof(Company).Name
-                };
-                var companySearchResult = _memberSearchService.SearchMembers(searchRequest);
-                if (companySearchResult.TotalCount > 0)
-                {
-                    return Ok(new {Message = "Company with same name already exist"});
-                }
+            var role = _roleService.SearchRoles(new RoleSearchRequest { Keyword = roleName }).Roles.FirstOrDefault() ??
+                       _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleEmployeeRole }).Roles.First();
+            user.Roles = new[] { role };
 
-                var corporateAdminRole = _roleService.SearchRoles(new RoleSearchRequest {Keyword = Constants.ModuleAdminRole}).Roles.First();
-                user.Roles = new[] {corporateAdminRole};
-            }
-            else
-            {
-                var employeeRole = _roleService.SearchRoles(new RoleSearchRequest { Keyword = Constants.ModuleEmployeeRole }).Roles.First();
-                user.Roles = new[] { employeeRole };
-            }
+            prepareSecurity?.Invoke(user);
 
-            //Register user in VC Platform (create security account)
             var result = await _securityService.CreateAsync(user);
 
             if (result.Succeeded)
             {
-                if (member == null)
-                {
-                    var company = new Company
-                    {
-                        Name = registerData.CompanyName
-                    };
-                    _memberService.SaveChanges(new[] { company });
+                prepare?.Invoke();
+                var member = build.Invoke(user);
+                complete?.Invoke(member);
 
-                    member = new CompanyMember
-                    {
-                        Id = user.Id,
-                        Name = $"{registerData.FirstName} {registerData.LastName}",
-                        FullName = $"{registerData.FirstName} {registerData.LastName}",
-                        FirstName = registerData.FirstName,
-                        LastName = registerData.LastName,
-                        Title = registerData.Title,
-                        Emails = new[] { registerData.Email },
-                        IsActive = true,
-                        Organizations = new List<string> { company.Id }
-                    };
-                }
-                else
+                try
                 {
-                    member.Name = $"{registerData.FirstName} {registerData.LastName}";
-                    member.FullName = $"{registerData.FirstName} {registerData.LastName}";
-                    member.FirstName = registerData.FirstName;
-                    member.LastName = registerData.LastName;
-                    member.Title = registerData.Title;
-                    member.IsActive = true;
+                    _memberService.SaveChanges(new Member[] { member });
                 }
-
-                _memberService.SaveChanges(new[] { member });
+                catch (ValidationException exception)
+                {
+                    return BadRequest(exception.Errors.BuildModelState());
+                }
             }
             else
             {
-                return Ok(new { Message = result.Errors.First() });
+                return BadRequest(result.Errors.BuildErrorMessage());
             }
 
             return Ok();

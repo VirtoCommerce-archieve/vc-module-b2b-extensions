@@ -5,10 +5,12 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
+using VirtoCommerce.B2BExtensionsModule.Web.Model.Search;
 using VirtoCommerce.B2BExtensionsModule.Web.Security;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
 
@@ -23,7 +25,9 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         private readonly ISecurityOptions _securityOptions;
         private readonly IRoleManagementService _roleService;
 
-        public CorporateMembersController(IMemberService memberService, IMemberSearchService memberSearchService, ISecurityService securityService, ISecurityOptions securityOptions, IRoleManagementService roleService)
+        public CorporateMembersController(IMemberService memberService, IMemberSearchService memberSearchService,
+            ISecurityService securityService, ISecurityOptions securityOptions,
+            IRoleManagementService roleService)
             : base(securityService)
         {
             _memberService = memberService;
@@ -55,6 +59,13 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [CheckPermission(Permission = B2BPredefinedPermissions.CompanyInfo)]
         public IHttpActionResult UpdateCompany(Company company)
         {
+            var searchCriteria = new CorporateMembersSearchCriteria { Name = company.Name, MemberType = typeof(Company).Name };
+            var alreadyExistCompany = _memberSearchService.SearchMembers(searchCriteria);
+            // Company must have uniquie name. If there is already exist company with the same name, return an error
+            if (!alreadyExistCompany.Results.IsNullOrEmpty() && alreadyExistCompany.Results.First().Id != company.Id)
+            {
+                return BadRequest(string.Format(Resources.B2BExtensionsResources.CompanyAlreadyExist, company.Name));
+            }
             _memberService.SaveChanges(new[] { company });
             return StatusCode(HttpStatusCode.NoContent);
         }

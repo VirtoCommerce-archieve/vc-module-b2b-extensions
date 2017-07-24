@@ -117,6 +117,36 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdminEmailIsNotValid" xml:space="preserve">
+    <value>Contact adminisrator's email is not valid.</value>
+  </data>
+  <data name="CompanyAlreadyExist" xml:space="preserve">
+    <value>Company {0} already exist.</value>
+  </data>
+  <data name="CompanyDoesNotExist" xml:space="preserve">
+    <value>Company {0} does not exist.</value>
+  </data>
+  <data name="EmailAlreadyUsed" xml:space="preserve">
+    <value>User with email {0} already registered.</value>
+  </data>
+  <data name="EmailsIsNotValid" xml:space="preserve">
+    <value>Specified emails is invalid.</value>
+  </data>
+  <data name="EmailsIsNullOrEmpty" xml:space="preserve">
+    <value>You must specify emails for which invitation will be send.</value>
+  </data>
+  <data name="InvalidCompanyCount" xml:space="preserve">
+    <value>You must specify an existing company and the ony one.</value>
+  </data>
+  <data name="InvalidEmailCount" xml:space="preserve">
+    <value>You must specify an unique email and the ony one.</value>
+  </data>
+  <data name="InvalidInvite" xml:space="preserve">
+    <value>Your invite is revoked or invalid.</value>
+  </data>
+  <data name="InviteAlreadyUsed" xml:space="preserve">
+    <value>You already registered by this invite.</value>
+  </data>
   <data name="InviteEmailNotificationBody" xml:space="preserve">
     <value>{{message}}&lt;br&gt;
 &lt;p&gt;You have been invited to register in {{store_name}} as {{company_name}} company member.&lt;/p&gt;
@@ -126,5 +156,14 @@ If you have any questions, please contact your company's account administrator, 
   </data>
   <data name="InviteEmailNotificationSubject" xml:space="preserve">
     <value>Invitation to join {{company_name}}.</value>
+  </data>
+  <data name="StoreDoesNotExist" xml:space="preserve">
+    <value>Store {0} does not exists</value>
+  </data>
+  <data name="UserAlreadyExist" xml:space="preserve">
+    <value>User {0} already registered.</value>
+  </data>
+  <data name="WithId" xml:space="preserve">
+    <value>with id {0}</value>
   </data>
 </root>

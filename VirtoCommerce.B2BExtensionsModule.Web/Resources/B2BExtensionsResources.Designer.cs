@@ -61,7 +61,101 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {{message}} &amp;gt;br&amp;lt; You have been invited to register in {{store_name}} as {{company_name}} company member. &amp;gt;br&amp;lt; Go to &amp;lt;strong&amp;gt;&amp;lt;a href=&quot;{{ url }}&quot;&amp;gt;this page&amp;lt;/a&amp;gt;&amp;lt;/strong&amp;gt to create your account. &amp;gt;br&amp;lt; If you are unable to to click on the link above, simple copy the link and paste into the browser where you enter web addresses and press enter. &amp;gt;br&amp;lt; If you have any questions, please contact your company&apos;s account administrator, {{admin.full_name}} at {{admin.email}}..
+        ///   Looks up a localized string similar to Contact adminisrator&apos;s email is not valid..
+        /// </summary>
+        internal static string AdminEmailIsNotValid {
+            get {
+                return ResourceManager.GetString("AdminEmailIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company {0} already exist..
+        /// </summary>
+        internal static string CompanyAlreadyExist {
+            get {
+                return ResourceManager.GetString("CompanyAlreadyExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company {0} does not exist..
+        /// </summary>
+        internal static string CompanyDoesNotExist {
+            get {
+                return ResourceManager.GetString("CompanyDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User with email {0} already registered..
+        /// </summary>
+        internal static string EmailAlreadyUsed {
+            get {
+                return ResourceManager.GetString("EmailAlreadyUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified emails is invalid..
+        /// </summary>
+        internal static string EmailsIsNotValid {
+            get {
+                return ResourceManager.GetString("EmailsIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must specify emails for which invitation will be send..
+        /// </summary>
+        internal static string EmailsIsNullOrEmpty {
+            get {
+                return ResourceManager.GetString("EmailsIsNullOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must specify an existing company and the ony one..
+        /// </summary>
+        internal static string InvalidCompanyCount {
+            get {
+                return ResourceManager.GetString("InvalidCompanyCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must specify an unique email and the ony one..
+        /// </summary>
+        internal static string InvalidEmailCount {
+            get {
+                return ResourceManager.GetString("InvalidEmailCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your invite is revoked or invalid..
+        /// </summary>
+        internal static string InvalidInvite {
+            get {
+                return ResourceManager.GetString("InvalidInvite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You already registered by this invite..
+        /// </summary>
+        internal static string InviteAlreadyUsed {
+            get {
+                return ResourceManager.GetString("InviteAlreadyUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {{message}}&lt;br&gt;
+        ///&lt;p&gt;You have been invited to register in {{store_name}} as {{company_name}} company member.&lt;/p&gt;
+        ///&lt;p&gt;Go to &lt;strong&gt;&lt;a href=&quot;{{ url }}&quot;&gt;{{ url }}&lt;/a&gt;&lt;/strong&gt; to create your account.&lt;/p&gt;
+        ///&lt;p&gt;If you are unable to click on the link above, simple copy the link and paste into the browser where you enter web addresses and press enter.&lt;br&gt;
+        ///If you have any questions, please contact your company&apos;s account administrator, {{admin_name}} at {{admin_email}}.&lt;/p&gt;.
         /// </summary>
         internal static string InviteEmailNotificationBody {
             get {
@@ -75,6 +169,33 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
         internal static string InviteEmailNotificationSubject {
             get {
                 return ResourceManager.GetString("InviteEmailNotificationSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Store {0} does not exists.
+        /// </summary>
+        internal static string StoreDoesNotExist {
+            get {
+                return ResourceManager.GetString("StoreDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0} already registered..
+        /// </summary>
+        internal static string UserAlreadyExist {
+            get {
+                return ResourceManager.GetString("UserAlreadyExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to with id {0}.
+        /// </summary>
+        internal static string WithId {
+            get {
+                return ResourceManager.GetString("WithId", resourceCulture);
             }
         }
     }

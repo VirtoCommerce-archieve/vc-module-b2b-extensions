@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentValidation;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.B2BExtensionsModule.Web.Model;
 using VirtoCommerce.B2BExtensionsModule.Web.Model.Notifications;
+using VirtoCommerce.B2BExtensionsModule.Web.Model.Search;
 using VirtoCommerce.B2BExtensionsModule.Web.Repositories;
 using VirtoCommerce.B2BExtensionsModule.Web.Resources;
 using VirtoCommerce.B2BExtensionsModule.Web.Security;
 using VirtoCommerce.B2BExtensionsModule.Web.Services;
+using VirtoCommerce.B2BExtensionsModule.Web.Services.Validation;
 using VirtoCommerce.CustomerModule.Data.Model;
 using VirtoCommerce.CustomerModule.Data.Repositories;
-using VirtoCommerce.CustomerModule.Data.Services;
 using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -47,11 +49,18 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
         {
             Func<CorporateMembersRepository> customerRepositoryFactory = () => new CorporateMembersRepository(_connectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>());
 
+            _container.RegisterInstance<Func<ICorporateMembersRepository>>(customerRepositoryFactory);
             _container.RegisterInstance<Func<ICustomerRepository>>(customerRepositoryFactory);
             _container.RegisterInstance<Func<IMemberRepository>>(customerRepositoryFactory);
 
             _container.RegisterType<IMemberService, CorporateMembersServiceImpl>();
-            _container.RegisterType<MemberSearchServiceDecorator, CorporateMemberSearchServiceDecorator>();
+            _container.RegisterType<IMemberSearchService, MemberSearchServiceDecorator>();
+
+            // https://www.codeproject.com/Articles/326647/FluentValidation-and-Unity
+            // https://stackoverflow.com/questions/25185272/how-can-i-automatically-register-all-my-fluent-validators-with-unity
+            _container.RegisterType<IValidatorFactory, ValidatorFactory>(new ContainerControlledLifetimeManager());
+            var validators = AssemblyScanner.FindValidatorsInAssemblyContaining<InviteValidator>();
+            validators.ForEach(validator => _container.RegisterType(validator.InterfaceType, validator.ValidatorType, new ContainerControlledLifetimeManager()));
         }
 
         public override void PostInitialize()
@@ -65,7 +74,18 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
             AbstractTypeFactory<Member>.RegisterType<Department>().MapToType<DepartmentDataEntity>();
             AbstractTypeFactory<MemberDataEntity>.RegisterType<DepartmentDataEntity>();
 
+            AbstractTypeFactory<MembersSearchCriteria>.RegisterType<CorporateMembersSearchCriteria>();
+
             base.PostInitialize();
+
+            InitializeSecurity();
+            InitializeNotifications();
+        }
+
+        #endregion
+
+        private void InitializeNotifications()
+        {
 
             var notificationManager = _container.Resolve<INotificationManager>();
             notificationManager.RegisterNotificationType(() => new CorporateInviteEmailNotification(_container.Resolve<IEmailNotificationSendingGateway>())
@@ -79,11 +99,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
                     Language = "en-US"
                 }
             });
-
-            InitializeSecurity();
         }
-
-        #endregion
 
         private void InitializeSecurity()
         {
