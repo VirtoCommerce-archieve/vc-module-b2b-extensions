@@ -115,7 +115,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must specify an existing company and the ony one..
+        ///   Looks up a localized string similar to You must specify an existing company and the only one..
         /// </summary>
         internal static string InvalidCompanyCount {
             get {
@@ -124,7 +124,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must specify an unique email and the ony one..
+        ///   Looks up a localized string similar to You must specify an unique email and the only one..
         /// </summary>
         internal static string InvalidEmailCount {
             get {

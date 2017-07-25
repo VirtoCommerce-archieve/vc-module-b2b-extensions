@@ -136,10 +136,10 @@
     <value>You must specify emails for which invitation will be send.</value>
   </data>
   <data name="InvalidCompanyCount" xml:space="preserve">
-    <value>You must specify an existing company and the ony one.</value>
+    <value>You must specify an existing company and the only one.</value>
   </data>
   <data name="InvalidEmailCount" xml:space="preserve">
-    <value>You must specify an unique email and the ony one.</value>
+    <value>You must specify an unique email and the only one.</value>
   </data>
   <data name="InvalidInvite" xml:space="preserve">
     <value>Your invite is revoked or invalid.</value>
