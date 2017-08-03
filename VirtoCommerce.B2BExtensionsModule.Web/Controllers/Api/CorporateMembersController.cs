@@ -75,11 +75,11 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [Route("companyMembers")]
         [ResponseType(typeof(GenericSearchResult<CompanyMember>))]
         [CheckPermission(Permission = B2BPredefinedPermissions.CompanyMembers)]
-        public IHttpActionResult GetCompanyMembers(MembersSearchCriteria criteria)
+        public IHttpActionResult GetCompanyMembers(CorporateMembersSearchCriteria criteria)
         {
             if (criteria == null)
             {
-                criteria = new MembersSearchCriteria();
+                criteria = new CorporateMembersSearchCriteria();
             }
 
             GenericSearchResult<Member> members = _memberSearchService.SearchMembers(criteria);
