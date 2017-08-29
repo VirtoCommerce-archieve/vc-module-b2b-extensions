@@ -8,7 +8,7 @@
     <dependency id="VirtoCommerce.Customer" version="2.14.1" />
   </dependencies>
 
-  <title>B2B extensions module</title>
+  <title>B2B extensions module (preview)</title>
   <description>Managing B2B functionality for corporate customers</description>
   <authors>
     <author>Aleksandr Vishnyakov</author>
