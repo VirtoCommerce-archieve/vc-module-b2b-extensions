@@ -13,7 +13,6 @@ using VirtoCommerce.B2BExtensionsModule.Web.Services;
 using VirtoCommerce.B2BExtensionsModule.Web.Services.Validation;
 using VirtoCommerce.CustomerModule.Data.Model;
 using VirtoCommerce.CustomerModule.Data.Repositories;
-using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -48,14 +47,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
 
         public override void Initialize()
         {
-            Func<CorporateCommerceRepository> commerceRepositoryFactory = () => new CorporateCommerceRepository(ConnectionStringName, _container.Resolve<AuditableInterceptor>());
-
-            _container.RegisterInstance<Func<ICorporateCommerceRepository>>(commerceRepositoryFactory);
-
-            _container.RegisterType<ICommerceService, CorporateCommerceServiceImpl>();
-            _container.RegisterType<ICorporateCommerceService, CorporateCommerceServiceImpl>();
-            _container.RegisterType<ICorporateCommerceSearchService, CorporateCommerceServiceImpl>();
-
             Func<CorporateMembersRepository> customerRepositoryFactory = () => new CorporateMembersRepository(ConnectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>());
 
             _container.RegisterInstance<Func<ICorporateMembersRepository>>(customerRepositoryFactory);
