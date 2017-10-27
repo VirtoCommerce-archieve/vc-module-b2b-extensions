@@ -166,6 +166,7 @@
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\Api\CorporateControllerBase.cs" />
+    <Compile Include="Controllers\Api\CorporateMailingController.cs" />
     <Compile Include="Controllers\Api\CorporateMembersController.cs" />
     <Compile Include="Controllers\Api\CorporateRegisterController.cs" />
     <Compile Include="Migrations\201706160905380_Initial.cs" />
@@ -188,7 +189,9 @@
     <Compile Include="Model\Department.cs" />
     <Compile Include="Model\DepartmentDataEntity.cs" />
     <Compile Include="Model\Extensions\MemberExtensions.cs" />
+    <Compile Include="Model\Mailing\CorporateEmailData.cs" />
     <Compile Include="Model\Notifications\CorporateInviteEmailNotification.cs" />
+    <Compile Include="Model\Notifications\CorporateProductEmailNotification.cs" />
     <Compile Include="Model\Search\CorporateMembersSearchCriteria.cs" />
     <Compile Include="Model\Security\CompanyMemberRegistrationByInviteData.cs" />
     <Compile Include="Services\MemberSearchServiceDecorator.cs" />
