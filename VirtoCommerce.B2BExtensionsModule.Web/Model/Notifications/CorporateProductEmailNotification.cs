@@ -13,6 +13,9 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Notifications
         [NotificationParameter("Product")]
         public CatalogProduct Product { get; set; }
 
+        [NotificationParameter("ProductUrl")]
+        public string ProductUrl { get; set; }
+
         [NotificationParameter("Store name")]
         public string StoreName { get; set; }
     }

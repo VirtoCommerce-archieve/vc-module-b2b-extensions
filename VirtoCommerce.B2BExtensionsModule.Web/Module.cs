@@ -99,6 +99,17 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
                     Language = "en-US"
                 }
             });
+            notificationManager.RegisterNotificationType(() => new CorporateProductEmailNotification(_container.Resolve<IEmailNotificationSendingGateway>())
+            {
+                DisplayName = "Product sending notification",
+                Description = "This notification sends to specified email when user want to send specified product to this email.",
+                NotificationTemplate = new NotificationTemplate
+                {
+                    Subject = B2BExtensionsResources.ProductEmailNotificationSubject,
+                    Body = B2BExtensionsResources.ProductEmailNotificationBody,
+                    Language = "en-US"
+                }
+            });
         }
 
         private void InitializeSecurity()

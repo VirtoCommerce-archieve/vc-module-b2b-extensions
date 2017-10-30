@@ -190,6 +190,7 @@
     <Compile Include="Model\DepartmentDataEntity.cs" />
     <Compile Include="Model\Extensions\MemberExtensions.cs" />
     <Compile Include="Model\Mailing\CorporateEmailData.cs" />
+    <Compile Include="Model\Mailing\CorporateProductSendingData.cs" />
     <Compile Include="Model\Notifications\CorporateInviteEmailNotification.cs" />
     <Compile Include="Model\Notifications\CorporateProductEmailNotification.cs" />
     <Compile Include="Model\Search\CorporateMembersSearchCriteria.cs" />

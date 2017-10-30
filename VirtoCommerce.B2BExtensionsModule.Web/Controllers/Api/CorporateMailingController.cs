@@ -31,19 +31,20 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
         [AllowAnonymous]
         [Route("product/{id}")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult SendProduct(string id, [FromBody] CorporateEmailData emailData)
+        public IHttpActionResult SendProduct(string id, [FromBody] CorporateProductSendingData sendingData)
         {
-            var store = _storeService.GetById(emailData.StoreId);
+            var store = _storeService.GetById(sendingData.StoreId);
             var product = _productService.GetById(id, ItemResponseGroup.ItemLarge);
 
-            var notification = _notificationManager.GetNewNotification<CorporateProductEmailNotification>(emailData.StoreId, "Store", emailData.Language);
+            var notification = _notificationManager.GetNewNotification<CorporateProductEmailNotification>(sendingData.StoreId, "Store", sendingData.Language);
 
             notification.Product = product;
+            notification.ProductUrl = sendingData.ProductUrl;
             notification.StoreName = store.Name;
             notification.Sender = store.Email;
             notification.IsActive = true;
 
-            notification.Recipient = emailData.Email;
+            notification.Recipient = sendingData.Email;
 
             _notificationManager.ScheduleSendNotification(notification);
 

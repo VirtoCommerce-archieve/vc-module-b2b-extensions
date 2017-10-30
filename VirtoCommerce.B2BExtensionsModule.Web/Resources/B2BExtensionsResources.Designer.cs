@@ -19,7 +19,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class B2BExtensionsResources {
@@ -169,6 +169,24 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
         internal static string InviteEmailNotificationSubject {
             get {
                 return ResourceManager.GetString("InviteEmailNotificationSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You selected &lt;a href={{ product_url }}&gt;{{ product.name }}&lt;a/&gt;  from {{ store_name}} to send to this email..
+        /// </summary>
+        internal static string ProductEmailNotificationBody {
+            get {
+                return ResourceManager.GetString("ProductEmailNotificationBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {{ store_name }}: {{ product.name }}.
+        /// </summary>
+        internal static string ProductEmailNotificationSubject {
+            get {
+                return ResourceManager.GetString("ProductEmailNotificationSubject", resourceCulture);
             }
         }
         

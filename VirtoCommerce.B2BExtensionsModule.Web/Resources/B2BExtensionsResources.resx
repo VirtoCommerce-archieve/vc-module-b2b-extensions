@@ -157,6 +157,12 @@ If you have any questions, please contact your company's account administrator, 
   <data name="InviteEmailNotificationSubject" xml:space="preserve">
     <value>Invitation to join {{company_name}}.</value>
   </data>
+  <data name="ProductEmailNotificationBody" xml:space="preserve">
+    <value>You selected &lt;a href={{ product_url }}&gt;{{ product.name }}&lt;a/&gt;  from {{ store_name}} to send to this email.</value>
+  </data>
+  <data name="ProductEmailNotificationSubject" xml:space="preserve">
+    <value>{{ store_name }}: {{ product.name }}</value>
+  </data>
   <data name="StoreDoesNotExist" xml:space="preserve">
     <value>Store {0} does not exists</value>
   </data>
