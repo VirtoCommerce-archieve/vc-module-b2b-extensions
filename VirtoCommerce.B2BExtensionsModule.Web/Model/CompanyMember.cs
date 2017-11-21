@@ -5,8 +5,9 @@ using VirtoCommerce.Domain.Customer.Model;
 namespace VirtoCommerce.B2BExtensionsModule.Web.Model
 {
     [Validator(typeof(CompanyMemberValidator))]
-    public class CompanyMember : Employee
+    public class CompanyMember : Contact
     {
         public string Title { get; set; }
+        public bool IsActive { get; set; }
     }
 }

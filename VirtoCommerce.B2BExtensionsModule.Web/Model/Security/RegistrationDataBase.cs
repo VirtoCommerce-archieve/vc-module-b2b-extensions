@@ -20,6 +20,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Security
 
         public string Password { get; set; }
 
+        public bool IsActive { get; set; }
+
         public virtual ApplicationUserExtended ToApplicationUserExtended()
         {
             return new ApplicationUserExtended
@@ -40,6 +42,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Security
             companyMember.FullName = $"{FirstName} {LastName}";
             companyMember.FirstName = FirstName;
             companyMember.LastName = LastName;
+            companyMember.IsActive = IsActive;
             companyMember.Title = Title;
             companyMember.Emails = new[] { Email };
             return companyMember;

@@ -1,12 +1,26 @@
 ﻿using VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.CustomerModule.Data.Model;
 using VirtoCommerce.Platform.Core.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace VirtoCommerce.B2BExtensionsModule.Web.Model
 {
-    public class CompanyMemberDataEntity : EmployeeDataEntity
+    public class CompanyMemberDataEntity : ContactDataEntity
     {
-        public string Title { get; set; }
+        [StringLength(128)]
+        public string Title { get; set; } 
+        
+        public bool IsActive { get; set; }
+
+        public override void Patch(MemberDataEntity memberEntity)
+        {
+            var target = memberEntity as CompanyMemberDataEntity;
+            
+            target.IsActive = this.IsActive;
+            target.Title = this.Title;
+
+            base.Patch(target);
+        }
 
         public override Member ToModel(Member member)
         {
@@ -16,16 +30,6 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model
         public override MemberDataEntity FromModel(Member member, PrimaryKeyResolvingMap pkMap)
         {
             return base.FromModel(member, pkMap);
-        }
-
-        public override void Patch(MemberDataEntity memberEntity)
-        {
-            var target = memberEntity as CompanyMemberDataEntity;
-            if (target != null)
-            {
-                target.Title = this.Title;
-            }
-            base.Patch(memberEntity);
-        }
+        }        
     }
 }

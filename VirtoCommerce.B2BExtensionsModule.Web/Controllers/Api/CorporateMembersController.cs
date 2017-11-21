@@ -64,7 +64,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Controllers.Api
             // Company must have uniquie name. If there is already exist company with the same name, return an error
             if (!alreadyExistCompany.Results.IsNullOrEmpty() && alreadyExistCompany.Results.First().Id != company.Id)
             {
-                return BadRequest(string.Format(Resources.B2BExtensionsResources.CompanyAlreadyExist, company.Name));
+                return BadRequest(string.Format(Resources.B2BCustomerResources.CompanyAlreadyExist, company.Name));
             }
             _memberService.SaveChanges(new[] { company });
             return StatusCode(HttpStatusCode.NoContent);

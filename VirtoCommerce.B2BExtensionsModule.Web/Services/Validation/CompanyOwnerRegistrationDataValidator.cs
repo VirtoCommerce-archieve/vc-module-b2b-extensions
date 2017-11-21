@@ -22,7 +22,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Services.Validation
                     var r = memberSearchService.SearchMembers(new CorporateMembersSearchCriteria { Name = x, MemberType = typeof(Company).Name });
                     return r.TotalCount == 0;
                 })
-                .WithMessage(string.Format(B2BExtensionsResources.CompanyAlreadyExist, Constants.PropertyValue));
+                .WithMessage(string.Format(B2BCustomerResources.CompanyAlreadyExist, Constants.PropertyValue));
         }
     }
 }

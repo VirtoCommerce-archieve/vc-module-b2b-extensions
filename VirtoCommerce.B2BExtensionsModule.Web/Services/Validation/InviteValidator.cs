@@ -18,9 +18,9 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Services.Validation
             CompanyMember member = null;
             RuleFor(x => x.Value).NotEmpty()
                 .Must(i => (member = memberService.GetByIds(new[] { i }).OfType<CompanyMember>().SingleOrDefault()) != null)
-                .WithMessage(B2BExtensionsResources.InvalidInvite)
+                .WithMessage(B2BCustomerResources.InvalidInvite)
                 .Must(i => !member.SecurityAccounts.Any())
-                .WithMessage(B2BExtensionsResources.InviteAlreadyUsed);
+                .WithMessage(B2BCustomerResources.InviteAlreadyUsed);
         }
     }
 }

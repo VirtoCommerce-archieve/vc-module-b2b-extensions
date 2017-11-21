@@ -65,11 +65,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
 
         public override void PostInitialize()
         {
-            AbstractTypeFactory<Member>.RegisterType<Company>().MapToType<CompanyDataEntity>();
-            AbstractTypeFactory<MemberDataEntity>.RegisterType<CompanyDataEntity>();
-
-            AbstractTypeFactory<Member>.RegisterType<CompanyMember>().MapToType<CompanyMemberDataEntity>();
-            AbstractTypeFactory<MemberDataEntity>.RegisterType<CompanyMemberDataEntity>();
+            AbstractTypeFactory<Member>.OverrideType<Company, Organization>().MapToType<CompanyDataEntity>();
+            AbstractTypeFactory<Member>.OverrideType<Contact, CompanyMember>().MapToType<CompanyMemberDataEntity>();
 
             AbstractTypeFactory<Member>.RegisterType<Department>().MapToType<DepartmentDataEntity>();
             AbstractTypeFactory<MemberDataEntity>.RegisterType<DepartmentDataEntity>();
@@ -94,8 +91,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
                 Description = "This notification sends to specified email when this email invited to register as company member.",
                 NotificationTemplate = new NotificationTemplate
                 {
-                    Subject = B2BExtensionsResources.InviteEmailNotificationSubject,
-                    Body = B2BExtensionsResources.InviteEmailNotificationBody,
+                    Subject = B2BCustomerResources.InviteEmailNotificationSubject,
+                    Body = B2BCustomerResources.InviteEmailNotificationBody,
                     Language = "en-US"
                 }
             });
@@ -105,8 +102,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
                 Description = "This notification sends to specified email when user want to send specified product to this email.",
                 NotificationTemplate = new NotificationTemplate
                 {
-                    Subject = B2BExtensionsResources.ProductEmailNotificationSubject,
-                    Body = B2BExtensionsResources.ProductEmailNotificationBody,
+                    Subject = B2BCustomerResources.ProductEmailNotificationSubject,
+                    Body = B2BCustomerResources.ProductEmailNotificationBody,
                     Language = "en-US"
                 }
             });

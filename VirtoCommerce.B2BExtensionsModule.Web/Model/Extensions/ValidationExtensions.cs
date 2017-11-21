@@ -18,19 +18,19 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Model.Extensions
         public static void StoreExist<T>(this IRuleBuilderOptions<T, string> rule, IStoreService storeService)
         {
             rule.Must(x => storeService.GetById(x) != null)
-                .WithMessage(string.Format(B2BExtensionsResources.StoreDoesNotExist, string.Format(B2BExtensionsResources.WithId, Constants.PropertyValue)));
+                .WithMessage(string.Format(B2BCustomerResources.StoreDoesNotExist, string.Format(B2BCustomerResources.WithId, Constants.PropertyValue)));
         }
 
         public static void CompanyExist<T>(this IRuleBuilderOptions<T, string> rule, IMemberService memberService)
         {
             rule.Must(x => memberService.GetByIds(new [] { x }).Any())
-                .WithMessage(string.Format(B2BExtensionsResources.CompanyDoesNotExist, Constants.PropertyValue));
+                .WithMessage(string.Format(B2BCustomerResources.CompanyDoesNotExist, Constants.PropertyValue));
         }
 
         public static void UserDoesNotExist<T>(this IRuleBuilderOptions<T, string> rule, ISecurityService securityService)
         {
             rule.MustAsync((x, ct) => securityService.FindByNameAsync(x, UserDetails.Reduced).ContinueWith(result => result.Result == null, ct))
-                .WithMessage(string.Format(B2BExtensionsResources.UserAlreadyExist, Constants.PropertyValue));
+                .WithMessage(string.Format(B2BCustomerResources.UserAlreadyExist, Constants.PropertyValue));
         }
 
         public static ModelStateDictionary BuildModelState(this IEnumerable<ValidationFailure> errors)

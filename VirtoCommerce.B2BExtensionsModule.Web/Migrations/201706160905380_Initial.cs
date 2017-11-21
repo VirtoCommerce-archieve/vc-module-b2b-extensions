@@ -21,11 +21,16 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Migrations
                 c => new
                     {
                         Id = c.String(nullable: false, maxLength: 128),
+                        Title = c.String(maxLength: 128),
+                        IsActive = c.Boolean(nullable: false)
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Employee", t => t.Id)
-                .Index(t => t.Id);
-            
+                .ForeignKey("dbo.Contact", t => t.Id)
+                .Index(t => t.Id);           
+
+            //Convert  all exist Contact records to CompanyMember
+            Sql("INSERT INTO dbo.CompanyMember (Id) SELECT Id FROM dbo.Contact");
+
             CreateTable(
                 "dbo.Department",
                 c => new
@@ -41,7 +46,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Migrations
         public override void Down()
         {
             DropForeignKey("dbo.Department", "Id", "dbo.Member");
-            DropForeignKey("dbo.CompanyMember", "Id", "dbo.Employee");
+            DropForeignKey("dbo.CompanyMember", "Id", "dbo.Contact");
             DropForeignKey("dbo.Company", "Id", "dbo.Organization");
 
             DropIndex("dbo.Department", new[] { "Id" });

@@ -16,10 +16,10 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Services.Validation
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.StoreId).NotEmpty().StoreExist(storeService);
             RuleFor(x => x.CompanyId).NotEmpty().CompanyExist(memberService);
-            RuleFor(x => x.Emails).NotEmpty().WithMessage(B2BExtensionsResources.EmailsIsNullOrEmpty);
-            RuleForEach(x => x.Emails).EmailAddress().WithMessage(B2BExtensionsResources.EmailsIsNotValid);
+            RuleFor(x => x.Emails).NotEmpty().WithMessage(B2BCustomerResources.EmailsIsNullOrEmpty);
+            RuleForEach(x => x.Emails).EmailAddress().WithMessage(B2BCustomerResources.EmailsIsNotValid);
             RuleFor(x => x.AdminName).NotEmpty();
-            RuleFor(x => x.AdminEmail).EmailAddress().WithMessage(B2BExtensionsResources.AdminEmailIsNotValid);
+            RuleFor(x => x.AdminEmail).EmailAddress().WithMessage(B2BCustomerResources.AdminEmailIsNotValid);
             RuleFor(x => x.CallbackUrl).NotEmpty();
         }
     }

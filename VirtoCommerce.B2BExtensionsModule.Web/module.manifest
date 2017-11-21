@@ -1,18 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <module>
   <id>VirtoCommerce.B2BExtension</id>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <platformVersion>2.12.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Core" version="2.24.1" />
     <dependency id="VirtoCommerce.Customer" version="2.14.1" />
   </dependencies>
 
-  <title>B2B extensions module (preview)</title>
+  <title>B2B customer module (preview)</title>
   <description>Managing B2B functionality for corporate customers</description>
   <authors>
     <author>Aleksandr Vishnyakov</author>
     <author>Artyom Androsov</author>
+    <author>Andrej Artiomov</author>
   </authors>
   <owners>
     <owner>Virto Commerce</owner>

@@ -22,14 +22,14 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class B2BExtensionsResources {
+    internal class B2BCustomerResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal B2BExtensionsResources() {
+        internal B2BCustomerResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VirtoCommerce.B2BExtensionsModule.Web.Resources.B2BExtensionsResources", typeof(B2BExtensionsResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VirtoCommerce.B2BExtensionsModule.Web.Resources.B2BCustomerResources", typeof(B2BCustomerResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
