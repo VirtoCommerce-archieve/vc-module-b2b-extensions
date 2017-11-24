@@ -26,10 +26,12 @@ namespace VirtoCommerce.B2BExtensionsModule.Web.Migrations
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Contact", t => t.Id)
-                .Index(t => t.Id);           
+                .Index(t => t.Id);
 
-            //Convert  all exist Contact records to CompanyMember
-            Sql("INSERT INTO dbo.CompanyMember (Id) SELECT Id FROM dbo.Contact");
+            //Convert all existing Organization records to Company
+            Sql("INSERT INTO dbo.Company (Id) SELECT Id FROM dbo.Organization");
+            //Convert all existing Contact records to CompanyMember
+            Sql("INSERT INTO dbo.CompanyMember (Id,IsActive) SELECT Id,1 FROM dbo.Contact");
 
             CreateTable(
                 "dbo.Department",

@@ -47,6 +47,8 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
 
         public override void Initialize()
         {
+            base.Initialize();
+
             Func<CorporateMembersRepository> customerRepositoryFactory = () => new CorporateMembersRepository(ConnectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>());
 
             _container.RegisterInstance<Func<ICorporateMembersRepository>>(customerRepositoryFactory);
@@ -65,7 +67,7 @@ namespace VirtoCommerce.B2BExtensionsModule.Web
 
         public override void PostInitialize()
         {
-            AbstractTypeFactory<Member>.OverrideType<Company, Organization>().MapToType<CompanyDataEntity>();
+            AbstractTypeFactory<Member>.OverrideType<Organization, Company>().MapToType<CompanyDataEntity>();
             AbstractTypeFactory<Member>.OverrideType<Contact, CompanyMember>().MapToType<CompanyMemberDataEntity>();
 
             AbstractTypeFactory<Member>.RegisterType<Department>().MapToType<DepartmentDataEntity>();
